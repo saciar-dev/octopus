@@ -331,6 +331,10 @@ body {
   padding: var(--sp-6);
 }
 
+.session-panel--clickable {
+  cursor: pointer;
+}
+
 .session-panel-speaker {
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
@@ -374,4 +378,106 @@ body {
   height: 56px;
   padding: 0 26px;
   font-size: var(--fs-h3);
+}
+
+/* Speaker screen */
+
+.speaker-body {
+  flex: 1;
+  padding: 28px 32px;
+  display: flex;
+  gap: 28px;
+  overflow: hidden;
+}
+
+.speaker-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-sunken);
+  border: 3px solid var(--color-border-strong);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-brand-primary);
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 30px;
+}
+
+.speaker-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.speaker-name {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h3);
+  color: var(--color-brand-primary);
+  margin: 8px 0 6px;
+}
+
+.speaker-social {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.speaker-social img {
+  border-radius: 6px;
+}
+
+.speaker-bio {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-link);
+  line-height: var(--lh-normal);
+  margin-top: 16px;
+  max-width: 640px;
+}
+
+.speaker-side {
+  width: 150px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.speaker-sponsor-badge {
+  width: 140px;
+  height: 90px;
+  border: 2px solid var(--color-accent);
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  color: var(--color-accent);
+  padding: 0 8px;
+}
+
+.speaker-followme {
+  text-align: center;
+}
+
+.speaker-followme-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-brand-primary);
+  margin-bottom: 8px;
+}
+
+.speaker-followme-qr {
+  width: 120px;
+  height: 120px;
+  background: repeating-conic-gradient(var(--neutral-900) 0% 25%, #fff 0% 50%) 0 0/16px 16px;
+  border: 4px solid #fff;
+  box-shadow: var(--shadow-sm);
 }

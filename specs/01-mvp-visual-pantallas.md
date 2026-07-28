@@ -12,8 +12,8 @@
 - Cuatro pantallas navegables: Splash, Schedule, Session, Speaker.
 - Splash: logo, subtítulo, botón engranaje (placeholder) y botón Play que navega a Schedule.
 - Schedule: header con logo de congreso + título + room, 4 tabs de fecha clickeables (cada una con su propia lista mock de sesiones), tabla de sesiones (Start/End/Session/Enter-icon), botones flotantes back/reset.
-- Session: header igual, bloque con horario y datos de la sesión (disertante, país, título), botones flotantes back/reset.
-- Speaker: header igual, foto, título de sesión, nombre/país del disertante, iconos sociales, bio, y a la derecha (según config de la sesión mock) logo de sponsor y/o QR "FOLLOW ME", botones back/Go.
+- Session: header igual, bloque con horario y datos de la sesión (disertante, país, título) clickeable (navega a Speaker), botones flotantes back/reset.
+- Speaker: header igual, foto, título de sesión, nombre/país del disertante, iconos sociales, bio, y a la derecha (según config de la sesión mock) logo de sponsor y/o QR "FOLLOW ME", botones back/Go (el "Go" queda como placeholder: Speaker es la última pantalla del flujo, no navega a ningún lado).
 - Las 3 variantes de Speaker (con sponsor+QR, sin sponsor con QR, sin sponsor ni QR) determinadas por la config de cada sesión mock.
 - Navegación por click en los botones visibles del diseño.
 - Navegación por teclado: Esc = volver (misma acción que el botón back flotante), flechas arriba/abajo = mover foco entre filas/tabs, Enter = confirmar elemento con foco.
@@ -83,8 +83,8 @@ Convenciones:
 3. Crear `src/screens/schedule.js`: header (logo congreso + título + room), tabs de fecha, tabla de sesiones poblada desde `mockData.js`, botones flotantes back/reset. Cablear navegación Play (Splash) → Schedule. Prueba manual: click en Play muestra Schedule con la tabla de la primera fecha.
 4. Implementar el cambio de tab de fecha en Schedule: click en cada tab recarga la tabla con las sesiones de esa fecha. Prueba manual: clickear cada una de las 4 tabs cambia el contenido de la tabla.
 5. Crear `src/screens/session.js`: header igual, bloque de horario + datos de sesión, botones back/reset. Cablear navegación: click en fila de Schedule → Session con los datos de esa sesión. Prueba manual: click en una fila de la tabla muestra la Session correspondiente.
-6. Crear `src/screens/speaker.js` con las 3 variantes (sponsor+QR, sin sponsor, sin sponsor ni QR) controladas por los campos `sponsor`/`followMeQr` de la sesión mock. Cablear navegación: botón "Enter"/ícono en Session → Speaker. Prueba manual: navegar a sesiones con distinta config muestra las 3 variantes correctamente.
-7. Implementar botones flotantes back/reset (Schedule, Session, Speaker): back vuelve a la pantalla anterior en el flujo, reset vuelve a Splash. Prueba manual: recorrer el flujo completo y volver con back/reset en cada pantalla.
+6. Crear `src/screens/speaker.js` con las 3 variantes (sponsor+QR, sin sponsor, sin sponsor ni QR) controladas por los campos `sponsor`/`followMeQr` de la sesión mock, con botones back/Go (Go queda como placeholder). Cablear navegación: click en el bloque de datos de sesión (disertante/país/título) en Session → Speaker. Prueba manual: navegar a sesiones con distinta config muestra las 3 variantes correctamente.
+7. Implementar botones flotantes back (Schedule, Session, Speaker) y reset (Schedule, Session): back vuelve a la pantalla anterior en el flujo, reset vuelve a Splash. Prueba manual: recorrer el flujo completo y volver con back/reset en cada pantalla que los tenga.
 8. Implementar navegación por teclado: Esc = acción de back, flechas arriba/abajo = mover foco entre filas de tabla/tabs, Enter = confirmar elemento con foco. Prueba manual: recorrer todo el flujo sin usar el mouse.
 9. Aplicar tokens y componentes de `references/` (colores, tipografía, spacing, Button, Panel, Tabs, ScheduleTable, SocialIcons, IconButton) a las 4 pantallas para que coincidan visualmente con las capturas. Prueba manual: comparar cada pantalla contra su PNG de referencia en `references/uploads/`.
 10. Fijar la ventana Electron en 1366x768 no resizable en `main.js`. Prueba manual: la ventana abre en ese tamaño y no permite redimensionar.
@@ -98,13 +98,14 @@ Convenciones:
 - [ ] Schedule muestra header (logo congreso, título del congreso, "ROOM A"), 4 tabs de fecha y una tabla con columnas Start/End/Session/Enter-icon.
 - [ ] Click en cada una de las 4 tabs de fecha cambia el contenido de la tabla a las sesiones mock de esa fecha.
 - [ ] Click en una fila de la tabla (o su ícono Enter) navega a Session con los datos de esa sesión (horario, disertante, título).
-- [ ] Click en el botón "Go"/ícono de Session navega a Speaker con los datos del disertante de esa sesión.
+- [ ] Click en el bloque de datos de sesión (disertante/país/título) de Session navega a Speaker con los datos del disertante de esa sesión.
+- [ ] Speaker muestra botones flotantes back y Go (Go es un placeholder sin navegación real, ya que Speaker es la última pantalla del flujo).
 - [ ] Speaker muestra foto, título de sesión, nombre y país del disertante, iconos sociales y bio en todas las variantes.
 - [ ] Para una sesión con `sponsor` y `followMeQr` definidos, Speaker muestra el logo de sponsor y el bloque "FOLLOW ME" + QR.
 - [ ] Para una sesión con `sponsor: null` y `followMeQr` definido, Speaker muestra el bloque "FOLLOW ME" + QR sin logo de sponsor.
 - [ ] Para una sesión con `sponsor: null` y `followMeQr: null`, Speaker no muestra ni sponsor ni bloque QR.
 - [ ] El botón flotante "back" en Schedule, Session y Speaker vuelve a la pantalla anterior del flujo (Speaker→Session→Schedule→Splash).
-- [ ] El botón flotante "reset" en Schedule, Session y Speaker vuelve directamente a Splash.
+- [ ] El botón flotante "reset" en Schedule y Session vuelve directamente a Splash. Speaker no tiene botón reset (tiene back y Go).
 - [ ] Presionar Esc en Schedule, Session o Speaker ejecuta la misma acción que el botón "back".
 - [ ] Presionar flecha arriba/abajo en Schedule mueve el foco entre las filas de la tabla (o tabs), y Enter confirma el elemento con foco.
 - [ ] Las 4 pantallas usan los tokens de color/tipografía/spacing de `references/tokens/` (sin colores o fuentes hardcodeadas distintas al sistema).
