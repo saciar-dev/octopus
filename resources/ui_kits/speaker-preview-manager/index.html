@@ -1,0 +1,50 @@
+<!-- @dsCard group="Speaker Preview Manager" viewport="1366x768" name="Speaker Preview Manager" subtitle="Kiosk app: splash, schedule, session, speaker screens" -->
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0;height:100%;font-family:'Nunito Sans',sans-serif}#root{height:100vh}</style>
+</head><body>
+<div id="root"></div>
+<script type="text/babel" src="./Chrome.jsx"></script>
+<script type="text/babel" src="./SplashScreen.jsx"></script>
+<script type="text/babel" src="./ScheduleScreen.jsx"></script>
+<script type="text/babel" src="./SessionScreen.jsx"></script>
+<script type="text/babel" src="./SpeakerScreen.jsx"></script>
+<script type="text/babel">
+const DAYS = [
+  { date: '2022-03-01', sessions: [
+    { enter: '09:05', end: '10:45', session: 'Session 1: Dysregulated circuits, dysregulated emotions', speaker: 'Roger McIntyre', country: 'Canada', title: 'Infección por CMV en TCPH alogénico: prevención y tratamiento', bio: 'Roger McIntyre, MD, FRCPC, completed his medical degree at Dalhousie University. He received his Psychiatry residency training and Fellowship in Psychiatric Pharmacology at the University of Toronto. Dr McIntyre is currently a Professor of Psychiatry and Pharmacology at the University of Toronto and Head of the Mood Disorders Psychopharmacology Unit at the University Health Network, Toronto, Canada.' },
+    { enter: '10:50', end: '11:30', session: 'Session 2: Major depressive disorder (MDD)', speaker: 'Ana Torres', country: 'Spain', title: 'Virus BK en TCPH: algo más que enemigos', bio: 'Ana Torres, MD, is Head of Hematology at Hospital Clínico, specializing in stem-cell transplant infectious complications.' },
+    { enter: '11:30', end: '12:10', session: 'Session 3: Lifestyle, environmental, and stress-related factors', speaker: 'Marco Bianchi', country: 'Italy', title: 'Manejo de complicaciones infecciosas post-trasplante', bio: 'Marco Bianchi is a transplant infectious-disease specialist based in Milan.' },
+  ]},
+  { date: '2022-03-02', sessions: [
+    { enter: '09:00', end: '09:40', session: 'Session 1: Novel biomarkers in early diagnosis', speaker: 'Elena Petrova', country: 'Russia', title: 'Biomarcadores emergentes en diagnóstico temprano', bio: 'Elena Petrova researches early-diagnosis biomarkers at the Moscow Institute of Hematology.' },
+  ]},
+  { date: '2022-07-08', sessions: [] },
+  { date: '2022-08-27', sessions: [] },
+];
+
+function App(){
+  const [screen, setScreen] = React.useState('splash');
+  const [activeDay, setActiveDay] = React.useState(DAYS[0].date);
+  const [session, setSession] = React.useState(null);
+  const [showSponsor, setShowSponsor] = React.useState(true);
+
+  if (screen === 'splash') return <window.SpeakerPreviewChrome.SplashScreen onPlay={() => setScreen('schedule')} />;
+  if (screen === 'schedule') return <window.SpeakerPreviewChrome.ScheduleScreen days={DAYS} active={activeDay} onDayChange={setActiveDay}
+    onEnterSession={(day, row) => { setSession(day.sessions.find(s => s.session === row.session)); setScreen('session'); }}
+    onBack={() => setScreen('splash')} />;
+  if (screen === 'session') return <window.SpeakerPreviewChrome.SessionScreen session={session} onGo={() => setScreen('speaker')} onBack={() => setScreen('schedule')} />;
+  if (screen === 'speaker') return <div>
+    <window.SpeakerPreviewChrome.SpeakerScreen session={session} showSponsor={showSponsor} onBack={() => setScreen('session')} />
+    <label style={{position:'fixed',bottom:8,left:8,background:'#fff',padding:'4px 8px',fontSize:11,borderRadius:4,boxShadow:'var(--shadow-sm)',fontFamily:'sans-serif'}}>
+      <input type="checkbox" checked={showSponsor} onChange={e=>setShowSponsor(e.target.checked)} /> sponsor
+    </label>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

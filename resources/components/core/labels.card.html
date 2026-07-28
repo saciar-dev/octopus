@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x180" name="Section label & panel" subtitle="Accent-bar heading and flat bordered panel" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;font-family:'Nunito Sans',sans-serif;background:var(--color-bg-page)"></div>
+<script type="text/babel">
+const { SectionLabel, Panel } = window.OctopusDesignSystem_492d91;
+function Demo(){
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:14}}>
+      <SectionLabel size="lg">WELCOME</SectionLabel>
+      <SectionLabel>09:05 - 10:45</SectionLabel>
+      <Panel style={{maxWidth:400}}>
+        <div style={{fontSize:14,color:'var(--color-text-muted)'}}>Flat white panel, thin light-blue border, no shadow, no rounding.</div>
+      </Panel>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+</script>

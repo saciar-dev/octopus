@@ -1,0 +1,16 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Schedule table" subtitle="Session list with navy header row" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="padding:20px;font-family:'Nunito Sans',sans-serif;background:var(--color-bg-page)"></div>
+<script type="text/babel">
+const { ScheduleTable } = window.OctopusDesignSystem_492d91;
+const rows=[
+  {enter:'09:05',end:'10:45',session:'Session 1: Dysregulated circuits, dysregulated emotions'},
+  {enter:'10:50',end:'11:30',session:'Session 2: Major depressive disorder (MDD)'},
+  {enter:'11:30',end:'12:10',session:'Session 3: Lifestyle, environmental, and stress-related factors'},
+];
+ReactDOM.createRoot(document.getElementById('root')).render(<ScheduleTable rows={rows}/>);
+</script>

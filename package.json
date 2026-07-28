@@ -1,0 +1,15 @@
+{
+  "name": "06-octopus",
+  "version": "1.0.0",
+  "description": "speaker preview manager",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "saciar dev",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^41.7.1"
+  }
+}
