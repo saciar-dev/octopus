@@ -79,12 +79,16 @@
       const sessions = sessionsByDate[date] || []
       tableWrap.innerHTML = ''
       const table = renderTable(sessions)
+      const enterButtons = []
       table.querySelectorAll('tr[data-session-id]').forEach((row) => {
         const session = sessions.find((s) => s.id === row.dataset.sessionId)
+        const enterBtn = row.querySelector('.schedule-table-enter-btn')
         row.querySelector('.schedule-table-session').addEventListener('click', () => enterSession(session))
-        row.querySelector('.schedule-table-enter-btn').addEventListener('click', () => enterSession(session))
+        enterBtn.addEventListener('click', () => enterSession(session))
+        enterButtons.push(enterBtn)
       })
       tableWrap.appendChild(table)
+      window.OctopusKeyboard.setFocusGroup(enterButtons)
     }
 
     tabs.querySelectorAll('.tab').forEach((tabEl) => {

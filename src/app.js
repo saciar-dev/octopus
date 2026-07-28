@@ -14,6 +14,7 @@ window.OctopusApp = (function () {
       console.warn(`[Octopus] Screen "${current.name}" is not implemented yet`)
       return
     }
+    window.OctopusKeyboard.setFocusGroup([])
     root.innerHTML = ''
     root.appendChild(renderFn(current.params))
   }
