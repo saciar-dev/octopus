@@ -81,16 +81,26 @@
     body.appendChild(main)
     body.appendChild(side)
 
+    const goError = document.createElement('div')
+    goError.className = 'speaker-go-error'
+    goError.hidden = true
+
     const goBtn = document.createElement('button')
     goBtn.className = 'btn btn--primary btn--lg'
     goBtn.textContent = 'Go'
-    goBtn.addEventListener('click', () => {
-      window.octopusBridge.openPresentation(speaker.pptPath)
+    goBtn.addEventListener('click', async () => {
+      goError.hidden = true
+      const result = await window.octopusBridge.openPresentation(speaker.pptPath)
+      if (!result.success) {
+        goError.textContent = result.error
+        goError.hidden = false
+      }
     })
 
     el.appendChild(window.OctopusChrome.renderHeader(congress))
     el.appendChild(body)
     el.appendChild(window.OctopusChrome.renderFloatingActions({ showReset: false, extra: goBtn }))
+    el.appendChild(goError)
     el.appendChild(window.OctopusChrome.renderFooter())
 
     return el
