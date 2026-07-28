@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron/main')
+const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
+const { execFile } = require('node:child_process')
 
 const findPowerPointExecutable = () => {
   const programFilesDirs = [
@@ -42,6 +43,25 @@ const createWindow = () => {
 
   win.loadFile('index.html')
 }
+
+ipcMain.handle('open-presentation', (_event, pptPath) => {
+  if (!fs.existsSync(pptPath)) {
+    return { success: false, error: `No se encontró el archivo de presentación: ${pptPath}` }
+  }
+
+  const powerPointExecutable = findPowerPointExecutable()
+  if (!powerPointExecutable) {
+    return { success: false, error: 'No se encontró PowerPoint instalado en este equipo.' }
+  }
+
+  execFile(powerPointExecutable, ['/S', pptPath], (error) => {
+    if (error) {
+      console.error('Error al abrir PowerPoint:', error)
+    }
+  })
+
+  return { success: true }
+})
 
 app.whenReady().then(() => {
   createWindow()
