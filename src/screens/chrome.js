@@ -40,13 +40,13 @@ window.OctopusChrome = (function () {
     `
     el.querySelector('.floating-back').addEventListener('click', () => {
       if (onBack) onBack()
-      else console.log('[Octopus] back placeholder clicked')
+      else window.OctopusApp.goBack()
     })
     const resetBtn = el.querySelector('.floating-reset')
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         if (onReset) onReset()
-        else console.log('[Octopus] reset placeholder clicked')
+        else window.OctopusApp.reset()
       })
     }
     if (extra) el.appendChild(extra)
