@@ -23,6 +23,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: { name: "Roche", logo: "assets/sponsors/roche.png" }, // null si no hay sponsor
         followMeQr: "assets/qr/roger-mcintyre.png", // null si no hay QR
+        pptPath: "C:\\Octopus\\presentations\\roger-mcintyre.pptx",
       },
     },
     {
@@ -39,6 +40,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: null, // variante: sin sponsor
         followMeQr: "assets/qr/ana-torres.png",
+        pptPath: "C:\\Octopus\\presentations\\ana-torres.pptx",
       },
     },
     {
@@ -55,6 +57,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: null, // variante: sin sponsor
         followMeQr: null, // variante: sin QR
+        pptPath: "C:\\Octopus\\presentations\\marco-ferreira.pptx",
       },
     },
   ],
@@ -73,6 +76,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: { name: "Roche", logo: "assets/sponsors/roche.png" },
         followMeQr: "assets/qr/laura-gimenez.png",
+        pptPath: "C:\\Octopus\\presentations\\laura-gimenez.pptx",
       },
     },
     {
@@ -89,6 +93,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: null,
         followMeQr: "assets/qr/diego-salas.png",
+        pptPath: "C:\\Octopus\\presentations\\diego-salas.pptx",
       },
     },
   ],
@@ -107,6 +112,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: { name: "Roche", logo: "assets/sponsors/roche.png" },
         followMeQr: "assets/qr/sofia-ramallo.png",
+        pptPath: "C:\\Octopus\\presentations\\sofia-ramallo.pptx",
       },
     },
     {
@@ -123,6 +129,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: null,
         followMeQr: null, // variante: sin QR
+        pptPath: "C:\\Octopus\\presentations\\valentina-cruz.pptx",
       },
     },
   ],
@@ -141,6 +148,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: { name: "Roche", logo: "assets/sponsors/roche.png" },
         followMeQr: "assets/qr/tomas-herrera.png",
+        pptPath: "C:\\Octopus\\presentations\\tomas-herrera.pptx",
       },
     },
     {
@@ -157,6 +165,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: null,
         followMeQr: "assets/qr/camila-duarte.png",
+        pptPath: "C:\\Octopus\\presentations\\archivo-inexistente.pptx", // ruta inválida a propósito, para probar el caso de error
       },
     },
   ],
