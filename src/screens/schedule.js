@@ -35,7 +35,7 @@
 
   function render() {
     const { congress, dates, sessionsByDate } = window.octopusData
-    const activeDate = dates[0]
+    let activeDate = dates[0]
 
     const el = document.createElement('div')
     el.className = 'screen screen-schedule'
@@ -49,16 +49,10 @@
 
     const tabs = document.createElement('div')
     tabs.className = 'tabs'
-    tabs.innerHTML = dates
-      .map(
-        (d) =>
-          `<button class="tab${d === activeDate ? ' tab--active' : ''}" data-date="${d}">${d}</button>`
-      )
-      .join('')
+    tabs.innerHTML = dates.map((d) => `<button class="tab" data-date="${d}">${d}</button>`).join('')
 
     const tableWrap = document.createElement('div')
     tableWrap.className = 'schedule-table-wrap'
-    tableWrap.appendChild(renderTable(sessionsByDate[activeDate] || []))
 
     const spacer = document.createElement('div')
     spacer.className = 'schedule-spacer'
@@ -72,6 +66,21 @@
     el.appendChild(body)
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
+
+    function selectDate(date) {
+      activeDate = date
+      tabs.querySelectorAll('.tab').forEach((tabEl) => {
+        tabEl.classList.toggle('tab--active', tabEl.dataset.date === date)
+      })
+      tableWrap.innerHTML = ''
+      tableWrap.appendChild(renderTable(sessionsByDate[date] || []))
+    }
+
+    tabs.querySelectorAll('.tab').forEach((tabEl) => {
+      tabEl.addEventListener('click', () => selectDate(tabEl.dataset.date))
+    })
+
+    selectDate(activeDate)
 
     return el
   }
