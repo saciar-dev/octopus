@@ -11,10 +11,13 @@
       http-equiv="X-Content-Security-Policy"
       content="default-src 'self'; script-src 'self'"
     />
-    <title>Hello from Electron renderer!</title>
+    <title>Octopus — Speaker Preview Manager</title>
+    <link rel="stylesheet" href="src/styles/tokens.css" />
+    <link rel="stylesheet" href="src/styles/app.css" />
   </head>
   <body>
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
+    <div id="app"></div>
+    <script src="src/app.js"></script>
+    <script src="src/screens/splash.js"></script>
   </body>
 </html>
