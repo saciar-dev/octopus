@@ -5,7 +5,7 @@
     table.innerHTML = `
       <thead>
         <tr>
-          <th>Enter</th>
+          <th>Start</th>
           <th>End</th>
           <th>Session</th>
           <th>Enter</th>

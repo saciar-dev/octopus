@@ -104,3 +104,211 @@ body {
   width: 26px;
   height: 26px;
 }
+
+/* Shared chrome (Header / floating actions) */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: var(--color-bg-surface);
+  border-bottom: var(--border-w) solid var(--color-border);
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.app-header-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-circle);
+  background: var(--color-accent);
+  border: 2px solid var(--color-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header-badge img {
+  width: 30px;
+  filter: brightness(0) invert(1);
+}
+
+.app-header-title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-h2);
+  color: var(--color-brand-primary);
+  letter-spacing: 0.3px;
+}
+
+.app-header-room {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  color: var(--color-text-muted);
+}
+
+.app-header-room span {
+  color: var(--color-accent-soft);
+  font-weight: var(--fw-bold);
+}
+
+.floating-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 32px 16px;
+}
+
+.icon-btn--sm {
+  width: 44px;
+  height: 44px;
+}
+
+.icon-btn--sm svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-btn--navy {
+  background: var(--color-brand-primary);
+}
+
+/* Section label */
+
+.section-label {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  min-height: 22px;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h3);
+  color: var(--color-text-heading);
+}
+
+.section-label--lg {
+  min-height: 28px;
+  font-size: var(--fs-h2);
+}
+
+.section-label-bar {
+  width: 4px;
+  background: var(--color-accent-soft);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.section-label span:last-child {
+  display: flex;
+  align-items: center;
+}
+
+/* Schedule screen */
+
+.schedule-body {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.schedule-spacer {
+  flex: 1;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.tab {
+  padding: 10px 22px;
+  border: var(--border-w) solid var(--color-border);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  background: var(--color-bg-sunken);
+  color: var(--color-text-muted);
+  border-bottom: 3px solid transparent;
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+
+.tab--active {
+  background: var(--color-bg-surface);
+  color: var(--color-brand-primary);
+  font-weight: var(--fw-bold);
+  border-bottom: 3px solid var(--color-accent);
+}
+
+.tab:focus-visible {
+  outline: 3px solid var(--color-accent-soft);
+  outline-offset: -3px;
+}
+
+.schedule-table-wrap {
+  overflow-y: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+}
+
+.schedule-table th {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  padding: 10px 14px;
+  border: var(--border-w) solid var(--color-brand-primary);
+}
+
+.schedule-table td {
+  padding: 10px 14px;
+  color: var(--color-text-muted);
+  font-size: var(--fs-body-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-bg-surface);
+}
+
+.schedule-table-session {
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.schedule-table-enter {
+  text-align: center;
+}
+
+.schedule-table tr.row--focused td {
+  background: var(--color-bg-sunken);
+}
+
+.schedule-table-enter-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-circle);
+  border: 1.5px solid var(--color-accent);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.schedule-table-enter-btn svg {
+  width: 8px;
+  height: 8px;
+  color: var(--color-accent);
+}

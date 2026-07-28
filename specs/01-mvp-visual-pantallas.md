@@ -11,7 +11,7 @@
 
 - Cuatro pantallas navegables: Splash, Schedule, Session, Speaker.
 - Splash: logo, subtítulo, botón engranaje (placeholder) y botón Play que navega a Schedule.
-- Schedule: header con logo de congreso + título + room, 4 tabs de fecha clickeables (cada una con su propia lista mock de sesiones), tabla de sesiones (Enter/End/Session/Enter-icon), botones flotantes back/reset.
+- Schedule: header con logo de congreso + título + room, 4 tabs de fecha clickeables (cada una con su propia lista mock de sesiones), tabla de sesiones (Start/End/Session/Enter-icon), botones flotantes back/reset.
 - Session: header igual, bloque con horario y datos de la sesión (disertante, país, título), botones flotantes back/reset.
 - Speaker: header igual, foto, título de sesión, nombre/país del disertante, iconos sociales, bio, y a la derecha (según config de la sesión mock) logo de sponsor y/o QR "FOLLOW ME", botones back/Go.
 - Las 3 variantes de Speaker (con sponsor+QR, sin sponsor con QR, sin sponsor ni QR) determinadas por la config de cada sesión mock.
@@ -95,7 +95,7 @@ Convenciones:
 - [ ] La pantalla inicial es Splash, mostrando logo, subtítulo "Speaker Preview Manager", botón engranaje y botón Play.
 - [ ] Click en el botón engranaje de Splash ejecuta un console.log placeholder y no cambia de pantalla.
 - [ ] Click en Play navega a Schedule.
-- [ ] Schedule muestra header (logo congreso, título del congreso, "ROOM A"), 4 tabs de fecha y una tabla con columnas Enter/End/Session/Enter-icon.
+- [ ] Schedule muestra header (logo congreso, título del congreso, "ROOM A"), 4 tabs de fecha y una tabla con columnas Start/End/Session/Enter-icon.
 - [ ] Click en cada una de las 4 tabs de fecha cambia el contenido de la tabla a las sesiones mock de esa fecha.
 - [ ] Click en una fila de la tabla (o su ícono Enter) navega a Session con los datos de esa sesión (horario, disertante, título).
 - [ ] Click en el botón "Go"/ícono de Session navega a Speaker con los datos del disertante de esa sesión.
