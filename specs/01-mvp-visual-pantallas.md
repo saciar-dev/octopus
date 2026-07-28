@@ -1,6 +1,6 @@
 # SPEC 01 — MVP visual de las pantallas Octopus
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** Ninguno
 > **Fecha:** 2026-07-28
 > **Objetivo:** Implementar la navegación visual completa entre las cuatro pantallas de Octopus (Splash, Schedule, Session, Speaker) con datos de ejemplo hardcodeados, sin lógica de negocio real.
@@ -11,15 +11,15 @@
 
 - Cuatro pantallas navegables: Splash, Schedule, Session, Speaker.
 - Splash: logo, subtítulo, botón engranaje (placeholder) y botón Play que navega a Schedule.
-- Schedule: header con logo de congreso + título + room, 4 tabs de fecha clickeables (cada una con su propia lista mock de sesiones), tabla de sesiones (Enter/End/Session/Enter-icon), botones flotantes back/reset.
-- Session: header igual, bloque con horario y datos de la sesión (disertante, país, título), botones flotantes back/reset.
-- Speaker: header igual, foto, título de sesión, nombre/país del disertante, iconos sociales, bio, y a la derecha (según config de la sesión mock) logo de sponsor y/o QR "FOLLOW ME", botones back/Go.
+- Schedule: header con logo de congreso + título + room, 4 tabs de fecha clickeables (cada una con su propia lista mock de sesiones), tabla de sesiones (Start/End/Session/Enter-icon), botones flotantes back/reset.
+- Session: header igual, bloque con horario y datos de la sesión (disertante, país, título) clickeable (navega a Speaker), botones flotantes back/reset.
+- Speaker: header igual, foto, título de sesión, nombre/país del disertante, iconos sociales, bio, y a la derecha (según config de la sesión mock) logo de sponsor y/o QR "FOLLOW ME", botones back/Go (el "Go" queda como placeholder: Speaker es la última pantalla del flujo, no navega a ningún lado).
 - Las 3 variantes de Speaker (con sponsor+QR, sin sponsor con QR, sin sponsor ni QR) determinadas por la config de cada sesión mock.
 - Navegación por click en los botones visibles del diseño.
 - Navegación por teclado: Esc = volver (misma acción que el botón back flotante), flechas arriba/abajo = mover foco entre filas/tabs, Enter = confirmar elemento con foco.
 - Datos de ejemplo hardcodeados en un archivo mock, con contenido similar al de las capturas (congreso, fechas, sesiones, disertante Roger McIntyre, sponsor Roche, QR).
 - Botón de configuración (engranaje) y logo de congreso/sponsor: placeholder de acción (console.log) al clickear, sin pantalla real detrás.
-- Ventana Electron fija en 1366x768, no resizable.
+- Ventana Electron redimensionable, que carga en pantalla completa (fullscreen) por defecto.
 - Código organizado en `src/screens/` con un archivo por pantalla.
 
 **Fuera de scope (para specs futuras):**
@@ -79,36 +79,37 @@ Convenciones:
 ## Implementation plan
 
 1. Crear `src/data/mockData.js` con el congreso, las 4 fechas y las sesiones mock (incluyendo las 3 variantes de sponsor/QR). Verificación manual: el archivo se puede importar sin errores (`node -e "require('./src/data/mockData.js')"` o equivalente).
-2. Crear `src/screens/splash.js` (o `.html` + lógica) con logo, subtítulo, botón engranaje (placeholder console.log) y botón Play. Cablear en `main.js`/`index.html` para que sea la vista inicial. Prueba manual: `npm start` abre la app en 1366x768 mostrando Splash.
+2. Crear `src/screens/splash.js` (o `.html` + lógica) con logo, subtítulo, botón engranaje (placeholder console.log) y botón Play. Cablear en `main.js`/`index.html` para que sea la vista inicial. Prueba manual: `npm start` abre la app en pantalla completa mostrando Splash.
 3. Crear `src/screens/schedule.js`: header (logo congreso + título + room), tabs de fecha, tabla de sesiones poblada desde `mockData.js`, botones flotantes back/reset. Cablear navegación Play (Splash) → Schedule. Prueba manual: click en Play muestra Schedule con la tabla de la primera fecha.
 4. Implementar el cambio de tab de fecha en Schedule: click en cada tab recarga la tabla con las sesiones de esa fecha. Prueba manual: clickear cada una de las 4 tabs cambia el contenido de la tabla.
 5. Crear `src/screens/session.js`: header igual, bloque de horario + datos de sesión, botones back/reset. Cablear navegación: click en fila de Schedule → Session con los datos de esa sesión. Prueba manual: click en una fila de la tabla muestra la Session correspondiente.
-6. Crear `src/screens/speaker.js` con las 3 variantes (sponsor+QR, sin sponsor, sin sponsor ni QR) controladas por los campos `sponsor`/`followMeQr` de la sesión mock. Cablear navegación: botón "Enter"/ícono en Session → Speaker. Prueba manual: navegar a sesiones con distinta config muestra las 3 variantes correctamente.
-7. Implementar botones flotantes back/reset (Schedule, Session, Speaker): back vuelve a la pantalla anterior en el flujo, reset vuelve a Splash. Prueba manual: recorrer el flujo completo y volver con back/reset en cada pantalla.
+6. Crear `src/screens/speaker.js` con las 3 variantes (sponsor+QR, sin sponsor, sin sponsor ni QR) controladas por los campos `sponsor`/`followMeQr` de la sesión mock, con botones back/Go (Go queda como placeholder). Cablear navegación: click en el bloque de datos de sesión (disertante/país/título) en Session → Speaker. Prueba manual: navegar a sesiones con distinta config muestra las 3 variantes correctamente.
+7. Implementar botones flotantes back (Schedule, Session, Speaker) y reset (Schedule, Session): back vuelve a la pantalla anterior en el flujo, reset vuelve a Splash. Prueba manual: recorrer el flujo completo y volver con back/reset en cada pantalla que los tenga.
 8. Implementar navegación por teclado: Esc = acción de back, flechas arriba/abajo = mover foco entre filas de tabla/tabs, Enter = confirmar elemento con foco. Prueba manual: recorrer todo el flujo sin usar el mouse.
 9. Aplicar tokens y componentes de `references/` (colores, tipografía, spacing, Button, Panel, Tabs, ScheduleTable, SocialIcons, IconButton) a las 4 pantallas para que coincidan visualmente con las capturas. Prueba manual: comparar cada pantalla contra su PNG de referencia en `references/uploads/`.
-10. Fijar la ventana Electron en 1366x768 no resizable en `main.js`. Prueba manual: la ventana abre en ese tamaño y no permite redimensionar.
+10. ~~Fijar la ventana Electron en 1366x768 no resizable~~ — descartado. Se decidió que la ventana sea redimensionable y cargue en fullscreen por defecto (`main.js`: `fullscreen: true`, sin `resizable: false`). Prueba manual: `npm start` abre la app en pantalla completa y permite salir de fullscreen/redimensionar.
 
 ## Acceptance criteria
 
-- [ ] `npm start` abre la app Electron en una ventana de 1366x768 no redimensionable.
-- [ ] La pantalla inicial es Splash, mostrando logo, subtítulo "Speaker Preview Manager", botón engranaje y botón Play.
-- [ ] Click en el botón engranaje de Splash ejecuta un console.log placeholder y no cambia de pantalla.
-- [ ] Click en Play navega a Schedule.
-- [ ] Schedule muestra header (logo congreso, título del congreso, "ROOM A"), 4 tabs de fecha y una tabla con columnas Enter/End/Session/Enter-icon.
-- [ ] Click en cada una de las 4 tabs de fecha cambia el contenido de la tabla a las sesiones mock de esa fecha.
-- [ ] Click en una fila de la tabla (o su ícono Enter) navega a Session con los datos de esa sesión (horario, disertante, título).
-- [ ] Click en el botón "Go"/ícono de Session navega a Speaker con los datos del disertante de esa sesión.
-- [ ] Speaker muestra foto, título de sesión, nombre y país del disertante, iconos sociales y bio en todas las variantes.
-- [ ] Para una sesión con `sponsor` y `followMeQr` definidos, Speaker muestra el logo de sponsor y el bloque "FOLLOW ME" + QR.
-- [ ] Para una sesión con `sponsor: null` y `followMeQr` definido, Speaker muestra el bloque "FOLLOW ME" + QR sin logo de sponsor.
-- [ ] Para una sesión con `sponsor: null` y `followMeQr: null`, Speaker no muestra ni sponsor ni bloque QR.
-- [ ] El botón flotante "back" en Schedule, Session y Speaker vuelve a la pantalla anterior del flujo (Speaker→Session→Schedule→Splash).
-- [ ] El botón flotante "reset" en Schedule, Session y Speaker vuelve directamente a Splash.
-- [ ] Presionar Esc en Schedule, Session o Speaker ejecuta la misma acción que el botón "back".
-- [ ] Presionar flecha arriba/abajo en Schedule mueve el foco entre las filas de la tabla (o tabs), y Enter confirma el elemento con foco.
-- [ ] Las 4 pantallas usan los tokens de color/tipografía/spacing de `references/tokens/` (sin colores o fuentes hardcodeadas distintas al sistema).
-- [ ] No hay llamadas a `localStorage`, `fs`, ni a ninguna fuente de datos externa: todo el contenido sale de `src/data/mockData.js`.
+- [x] `npm start` abre la app Electron en una ventana redimensionable, en pantalla completa (fullscreen) por defecto.
+- [x] La pantalla inicial es Splash, mostrando logo, subtítulo "Speaker Preview Manager", botón engranaje y botón Play.
+- [x] Click en el botón engranaje de Splash ejecuta un console.log placeholder y no cambia de pantalla.
+- [x] Click en Play navega a Schedule.
+- [x] Schedule muestra header (logo congreso, título del congreso, "ROOM A"), 4 tabs de fecha y una tabla con columnas Start/End/Session/Enter-icon.
+- [x] Click en cada una de las 4 tabs de fecha cambia el contenido de la tabla a las sesiones mock de esa fecha.
+- [x] Click en una fila de la tabla (o su ícono Enter) navega a Session con los datos de esa sesión (horario, disertante, título).
+- [x] Click en el bloque de datos de sesión (disertante/país/título) de Session navega a Speaker con los datos del disertante de esa sesión.
+- [x] Speaker muestra botones flotantes back y Go (Go es un placeholder sin navegación real, ya que Speaker es la última pantalla del flujo).
+- [x] Speaker muestra foto, título de sesión, nombre y país del disertante, iconos sociales y bio en todas las variantes.
+- [x] Para una sesión con `sponsor` y `followMeQr` definidos, Speaker muestra el logo de sponsor y el bloque "FOLLOW ME" + QR.
+- [x] Para una sesión con `sponsor: null` y `followMeQr` definido, Speaker muestra el bloque "FOLLOW ME" + QR sin logo de sponsor.
+- [x] Para una sesión con `sponsor: null` y `followMeQr: null`, Speaker no muestra ni sponsor ni bloque QR.
+- [x] El botón flotante "back" en Schedule, Session y Speaker vuelve a la pantalla anterior del flujo (Speaker→Session→Schedule→Splash).
+- [x] El botón flotante "reset" en Schedule y Session vuelve directamente a Splash. Speaker no tiene botón reset (tiene back y Go).
+- [x] Presionar Esc en Schedule, Session o Speaker ejecuta la misma acción que el botón "back".
+- [x] Presionar flecha arriba/abajo en Schedule mueve el foco entre las filas de la tabla (o tabs), y Enter confirma el elemento con foco.
+- [x] Las 4 pantallas usan los tokens de color/tipografía/spacing de `references/tokens/` (sin colores o fuentes hardcodeadas distintas al sistema).
+- [x] No hay llamadas a `localStorage`, `fs`, ni a ninguna fuente de datos externa: todo el contenido sale de `src/data/mockData.js`.
 
 ## Decisions
 
@@ -120,7 +121,7 @@ Convenciones:
 - **Sí:** las 3 variantes de Speaker (sponsor+QR, sin sponsor, sin sponsor ni QR) controladas por campos de datos (`sponsor`, `followMeQr`), no por un selector manual. Mantiene el MVP fiel a cómo se comportaría con datos reales de congreso.
 - **Sí:** navegación por teclado con Esc/flechas/Enter, pensando en el uso kiosco/tablet sin mouse.
 - **No:** generación real de QR. Se usa una imagen QR estática de ejemplo; la generación dinámica queda fuera de scope.
-- **Sí:** ventana fija 1366x768, no resizable. Coincide con la proporción de las capturas de referencia y evita trabajo de responsive fuera de scope.
+- **No:** ventana fija 1366x768 no resizable. Se decidió priorizar una ventana redimensionable que abra en fullscreen por defecto en lugar de un tamaño fijo (cambio de decisión durante la implementación del Paso 10).
 - **No:** pantalla de configuración real. El botón engranaje queda como placeholder (console.log) hasta que exista una spec de configuración.
 
 ## Risks
