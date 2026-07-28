@@ -312,3 +312,66 @@ body {
   height: 8px;
   color: var(--color-accent);
 }
+
+/* Session screen */
+
+.session-body {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.session-panel {
+  flex: 1;
+  background: var(--color-bg-surface);
+  border: var(--border-w) solid var(--color-border-strong);
+  padding: var(--sp-6);
+}
+
+.session-panel-speaker {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h3);
+  color: var(--color-brand-primary);
+}
+
+.session-panel-title {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  color: var(--color-accent-warm);
+  margin-top: 6px;
+}
+
+/* Buttons (Go, etc.) */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  transition: filter var(--dur-fast) var(--ease-standard);
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-text-on-brand);
+  box-shadow: var(--shadow-btn);
+}
+
+.btn--lg {
+  height: 56px;
+  padding: 0 26px;
+  font-size: var(--fs-h3);
+}

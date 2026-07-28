@@ -67,13 +67,24 @@
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
 
+    function enterSession(session) {
+      window.OctopusApp.show('session', { congress, session })
+    }
+
     function selectDate(date) {
       activeDate = date
       tabs.querySelectorAll('.tab').forEach((tabEl) => {
         tabEl.classList.toggle('tab--active', tabEl.dataset.date === date)
       })
+      const sessions = sessionsByDate[date] || []
       tableWrap.innerHTML = ''
-      tableWrap.appendChild(renderTable(sessionsByDate[date] || []))
+      const table = renderTable(sessions)
+      table.querySelectorAll('tr[data-session-id]').forEach((row) => {
+        const session = sessions.find((s) => s.id === row.dataset.sessionId)
+        row.querySelector('.schedule-table-session').addEventListener('click', () => enterSession(session))
+        row.querySelector('.schedule-table-enter-btn').addEventListener('click', () => enterSession(session))
+      })
+      tableWrap.appendChild(table)
     }
 
     tabs.querySelectorAll('.tab').forEach((tabEl) => {

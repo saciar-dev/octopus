@@ -23,7 +23,7 @@ window.OctopusChrome = (function () {
     return el
   }
 
-  function renderFloatingActions({ onBack, onReset } = {}) {
+  function renderFloatingActions({ onBack, onReset, extra } = {}) {
     const el = document.createElement('div')
     el.className = 'floating-actions'
     el.innerHTML = `
@@ -42,6 +42,7 @@ window.OctopusChrome = (function () {
       if (onReset) onReset()
       else console.log('[Octopus] reset placeholder clicked')
     })
+    if (extra) el.appendChild(extra)
     return el
   }
 
