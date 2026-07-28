@@ -86,14 +86,6 @@ body {
   height: 160px;
 }
 
-.splash-subtitle {
-  font-family: var(--font-display);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-h2);
-  color: var(--color-brand-primary);
-  letter-spacing: 0.3px;
-}
-
 .splash-play {
   width: 76px;
   height: 76px;
