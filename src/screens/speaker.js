@@ -85,7 +85,7 @@
     goBtn.className = 'btn btn--primary btn--lg'
     goBtn.textContent = 'Go'
     goBtn.addEventListener('click', () => {
-      console.log('[Octopus] Speaker Go: placeholder, no hay pantalla siguiente')
+      window.octopusBridge.openPresentation(speaker.pptPath)
     })
 
     el.appendChild(window.OctopusChrome.renderHeader(congress))

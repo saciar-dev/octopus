@@ -23,7 +23,7 @@ const sessionsByDate = {
         social: { facebook: "#", instagram: "#", linkedin: "#", twitter: "#" },
         sponsor: { name: "Roche", logo: "assets/sponsors/roche.png" }, // null si no hay sponsor
         followMeQr: "assets/qr/roger-mcintyre.png", // null si no hay QR
-        pptPath: "C:\\Octopus\\presentations\\roger-mcintyre.pptx",
+        pptPath: "C:\\Users\\Evento\\documents\\Octopus\\data\\presentations\\254\\254.pptx",
       },
     },
     {
