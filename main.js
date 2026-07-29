@@ -3,7 +3,9 @@ const path = require('node:path')
 const fs = require('node:fs')
 const { execFile } = require('node:child_process')
 const config = require('./config.json')
-const { fetchInitialData, startPeriodicRefresh } = require('./src/main/appState')
+const { fetchInitialData, startPeriodicRefresh, getState, onStateChange, refreshCharlas } = require('./src/main/appState')
+
+let mainWindow
 
 const findPowerPointExecutable = () => {
   const programFilesDirs = [
@@ -44,6 +46,7 @@ const createWindow = () => {
   })
 
   win.loadFile('index.html')
+  mainWindow = win
 }
 
 ipcMain.handle('open-presentation', (_event, pptPath) => {
@@ -63,6 +66,16 @@ ipcMain.handle('open-presentation', (_event, pptPath) => {
   })
 
   return { success: true }
+})
+
+ipcMain.handle('get-state', () => getState())
+
+ipcMain.handle('refresh-charlas', () => refreshCharlas(config))
+
+onStateChange((state) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('state-updated', state)
+  }
 })
 
 app.whenReady().then(() => {

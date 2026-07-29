@@ -40,6 +40,7 @@ window.OctopusApp = (function () {
     history.length = 0
     current = { name: 'splash', params: undefined }
     renderCurrent()
+    window.octopusBridge.refreshCharlas()
   }
 
   document.addEventListener('DOMContentLoaded', () => {

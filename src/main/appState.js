@@ -6,8 +6,20 @@ const REFRESH_INTERVAL_MS = 60 * 1000
 
 let state = { status: 'loading', data: null, error: null }
 let refreshInFlight = false
+let listeners = []
 
 const getState = () => state
+
+const onStateChange = (listener) => {
+  listeners.push(listener)
+}
+
+const setState = (next) => {
+  state = next
+  for (const listener of listeners) {
+    listener(state)
+  }
+}
 
 const fetchInitialData = async (config) => {
   try {
@@ -16,14 +28,14 @@ const fetchInitialData = async (config) => {
       fetchSalas(config),
       fetchCharlas(config),
     ])
-    state = {
+    setState({
       status: 'ready',
       data: normalizeState({ congress, salas, charlas, idSala: config.idSala }),
       error: null,
-    }
+    })
   } catch (err) {
     console.error(`Fetch inicial falló, reintentando en ${INITIAL_RETRY_DELAY_MS}ms:`, err.message)
-    state = { status: 'error', data: null, error: err.message }
+    setState({ status: 'error', data: null, error: err.message })
     setTimeout(() => fetchInitialData(config), INITIAL_RETRY_DELAY_MS)
   }
 }
@@ -37,7 +49,7 @@ const refreshCharlas = async (config) => {
     const charlas = await fetchCharlas(config)
     const { dates, sessionsByDate } = normalizeCharlas(charlas, config.idSala)
     if (state.status === 'ready') {
-      state = { ...state, data: { ...state.data, dates, sessionsByDate } }
+      setState({ ...state, data: { ...state.data, dates, sessionsByDate } })
     }
     console.log('Refresh de charlas OK:', new Date().toISOString())
   } catch (err) {
@@ -51,4 +63,4 @@ const startPeriodicRefresh = (config) => {
   setInterval(() => refreshCharlas(config), REFRESH_INTERVAL_MS)
 }
 
-module.exports = { fetchInitialData, getState, refreshCharlas, startPeriodicRefresh }
+module.exports = { fetchInitialData, getState, refreshCharlas, startPeriodicRefresh, onStateChange }
