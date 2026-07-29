@@ -85,17 +85,20 @@
     goError.className = 'speaker-go-error'
     goError.hidden = true
 
-    const goBtn = document.createElement('button')
-    goBtn.className = 'btn btn--primary btn--lg'
-    goBtn.textContent = 'Go'
-    goBtn.addEventListener('click', async () => {
-      goError.hidden = true
-      const result = await window.octopusBridge.openPresentation(speaker.presentacion?.nombreArchivo)
-      if (!result.success) {
-        goError.textContent = result.error
-        goError.hidden = false
-      }
-    })
+    let goBtn = null
+    if (speaker.presentacion !== null) {
+      goBtn = document.createElement('button')
+      goBtn.className = 'btn btn--primary btn--lg'
+      goBtn.textContent = 'Go'
+      goBtn.addEventListener('click', async () => {
+        goError.hidden = true
+        const result = await window.octopusBridge.openPresentation(speaker.presentacion.nombreArchivo)
+        if (!result.success) {
+          goError.textContent = result.error
+          goError.hidden = false
+        }
+      })
+    }
 
     el.appendChild(window.OctopusChrome.renderHeader(congress))
     el.appendChild(body)
