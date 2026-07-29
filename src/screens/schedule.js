@@ -34,7 +34,7 @@
   }
 
   function render() {
-    const { congress, dates, sessionsByDate } = window.octopusData
+    const { congress, dates, sessionsByDate } = window.OctopusState.getState().data
     let activeDate = dates[0]
 
     const el = document.createElement('div')
@@ -81,7 +81,7 @@
       const table = renderTable(sessions)
       const enterButtons = []
       table.querySelectorAll('tr[data-session-id]').forEach((row) => {
-        const session = sessions.find((s) => s.id === row.dataset.sessionId)
+        const session = sessions.find((s) => String(s.id) === row.dataset.sessionId)
         const enterBtn = row.querySelector('.schedule-table-enter-btn')
         row.querySelector('.schedule-table-session').addEventListener('click', () => enterSession(session))
         enterBtn.addEventListener('click', () => enterSession(session))

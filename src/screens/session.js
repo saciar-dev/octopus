@@ -13,7 +13,7 @@
     const panel = document.createElement('div')
     panel.className = 'session-panel session-panel--clickable'
     panel.innerHTML = `
-      <div class="session-panel-speaker">${session.speaker.name}, ${session.speaker.country}</div>
+      <div class="session-panel-speaker">${session.speaker.name}</div>
       <div class="session-panel-title">${session.title}</div>
     `
     panel.addEventListener('click', () => {

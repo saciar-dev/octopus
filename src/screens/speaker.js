@@ -2,7 +2,7 @@
   const SOCIAL_ICONS = {
     facebook: 'references/assets/icons/social/facebook.png',
     instagram: 'references/assets/icons/social/instagram.png',
-    linkedin: 'references/assets/icons/social/linkedin.png',
+    linkedIn: 'references/assets/icons/social/linkedin.png',
     twitter: 'references/assets/icons/social/twitter.png',
   }
 
@@ -34,9 +34,9 @@
     sessionTitleLabel.className = 'section-label'
     sessionTitleLabel.innerHTML = `<span class="section-label-bar"></span><span>${speaker.sessionTitle}</span>`
 
-    const nameCountry = document.createElement('div')
-    nameCountry.className = 'speaker-name'
-    nameCountry.textContent = `${speaker.name}, ${speaker.country}`
+    const name = document.createElement('div')
+    name.className = 'speaker-name'
+    name.textContent = speaker.name
 
     const social = document.createElement('div')
     social.className = 'speaker-social'
@@ -50,7 +50,7 @@
     bio.textContent = speaker.bio
 
     main.appendChild(sessionTitleLabel)
-    main.appendChild(nameCountry)
+    main.appendChild(name)
     main.appendChild(social)
     main.appendChild(bio)
 
@@ -90,7 +90,7 @@
     goBtn.textContent = 'Go'
     goBtn.addEventListener('click', async () => {
       goError.hidden = true
-      const result = await window.octopusBridge.openPresentation(speaker.pptPath)
+      const result = await window.octopusBridge.openPresentation(speaker.presentacion?.nombreArchivo)
       if (!result.success) {
         goError.textContent = result.error
         goError.hidden = false
