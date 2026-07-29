@@ -1,6 +1,6 @@
 # SPEC 02 — Botón Go: abrir PowerPoint en modo presentación
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 01 (mvp-visual-pantallas)
 > **Fecha:** 2026-07-28
 > **Objetivo:** Implementar el botón "Go" de la pantalla Speaker para que abra el archivo PowerPoint (.pptx) de la sesión directamente en modo presentación (slideshow) usando PowerPoint instalado en Windows.
@@ -61,14 +61,14 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Cada sesión mock en `src/data/mockData.js` tiene un campo `speaker.pptPath` con una ruta absoluta a un archivo `.pptx`.
-- [ ] Al menos una sesión mock tiene un `pptPath` que apunta a un archivo inexistente, para poder probar el caso de error.
-- [ ] En la pantalla Speaker, click en el botón "Go" con la sesión activa teniendo un `pptPath` válido (archivo existente y PowerPoint instalado) abre PowerPoint directamente en modo presentación (slideshow), sin pasar por el modo edición.
-- [ ] Click en "Go" con un `pptPath` que apunta a un archivo inexistente muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
-- [ ] Si `POWERPNT.EXE` no se encuentra en ninguna de las rutas conocidas del sistema, click en "Go" muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
-- [ ] Después de abrir PowerPoint (caso exitoso), la ventana de Octopus permanece como está (no se minimiza ni se oculta explícitamente).
-- [ ] La lógica de acceso al filesystem y de ejecución de `POWERPNT.EXE` vive en `main.js` (proceso principal), no en el renderer, y se expone al renderer únicamente a través de `preload.js`/`contextBridge`.
-- [ ] No se rompe ninguna funcionalidad existente de la SPEC 01 (navegación entre pantallas, botones back, teclado, etc.).
+- [x] Cada sesión mock en `src/data/mockData.js` tiene un campo `speaker.pptPath` con una ruta absoluta a un archivo `.pptx`.
+- [x] Al menos una sesión mock tiene un `pptPath` que apunta a un archivo inexistente, para poder probar el caso de error.
+- [x] En la pantalla Speaker, click en el botón "Go" con la sesión activa teniendo un `pptPath` válido (archivo existente y PowerPoint instalado) abre PowerPoint directamente en modo presentación (slideshow), sin pasar por el modo edición.
+- [x] Click en "Go" con un `pptPath` que apunta a un archivo inexistente muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
+- [x] Si `POWERPNT.EXE` no se encuentra en ninguna de las rutas conocidas del sistema, click en "Go" muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
+- [x] Después de abrir PowerPoint (caso exitoso), la ventana de Octopus permanece como está (no se minimiza ni se oculta explícitamente).
+- [x] La lógica de acceso al filesystem y de ejecución de `POWERPNT.EXE` vive en `main.js` (proceso principal), no en el renderer, y se expone al renderer únicamente a través de `preload.js`/`contextBridge`.
+- [x] No se rompe ninguna funcionalidad existente de la SPEC 01 (navegación entre pantallas, botones back, teclado, etc.).
 
 ## Decisions
 
