@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
 const { execFile } = require('node:child_process')
+const config = require('./config.json')
+const { fetchInitialData } = require('./src/main/appState')
 
 const findPowerPointExecutable = () => {
   const programFilesDirs = [
@@ -65,6 +67,7 @@ ipcMain.handle('open-presentation', (_event, pptPath) => {
 
 app.whenReady().then(() => {
   createWindow()
+  fetchInitialData(config)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
