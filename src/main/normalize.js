@@ -44,9 +44,7 @@ const normalizeCharla = (charla) => ({
   },
 })
 
-const normalizeState = ({ congress, salas, charlas, idSala }) => {
-  const sala = salas.find((s) => s.id === idSala)
-
+const normalizeCharlas = (charlas, idSala) => {
   const charlasPorSala = charlas[String(idSala)] ?? {}
   const dates = Object.keys(charlasPorSala)
 
@@ -58,15 +56,20 @@ const normalizeState = ({ congress, salas, charlas, idSala }) => {
     sessionsByDate[date] = flattened.map(normalizeCharla)
   }
 
+  return { dates, sessionsByDate }
+}
+
+const normalizeState = ({ congress, salas, charlas, idSala }) => {
+  const sala = salas.find((s) => s.id === idSala)
+
   return {
     congress: {
       name: congress.nombre,
       room: sala ? sala.nombre : null,
       logo: congress.logo,
     },
-    dates,
-    sessionsByDate,
+    ...normalizeCharlas(charlas, idSala),
   }
 }
 
-module.exports = { normalizeState }
+module.exports = { normalizeState, normalizeCharlas }
