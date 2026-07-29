@@ -473,3 +473,21 @@ body {
   border: 4px solid #fff;
   box-shadow: var(--shadow-sm);
 }
+
+.speaker-go-error {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  max-width: 560px;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-danger);
+  color: var(--color-text-on-brand);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  z-index: 20;
+}
