@@ -10,10 +10,12 @@
     label.className = 'section-label section-label--lg'
     label.innerHTML = `<span class="section-label-bar"></span><span>${session.enter} - ${session.end}</span>`
 
+    const moderatorSuffix = session.speaker.role === 'MODERADOR' ? ' (Moderador)' : ''
+
     const panel = document.createElement('div')
     panel.className = 'session-panel session-panel--clickable'
     panel.innerHTML = `
-      <div class="session-panel-speaker">${session.speaker.name}</div>
+      <div class="session-panel-speaker">${session.speaker.name}${moderatorSuffix}</div>
       <div class="session-panel-title">${session.title}</div>
     `
     panel.addEventListener('click', () => {
