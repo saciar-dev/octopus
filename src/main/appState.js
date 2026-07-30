@@ -62,12 +62,14 @@ const runFetchAttempt = async (effectiveConfig, generation) => {
       fetchCharlas(effectiveConfig),
     ])
     if (generation !== fetchGeneration) return
+    const data = normalizeState({ congress, salas, charlas, idSala: effectiveConfig.idSala })
     setState({
       status: 'ready',
-      data: normalizeState({ congress, salas, charlas, idSala: effectiveConfig.idSala }),
+      data,
       error: null,
       settings: state.settings,
     })
+    enqueueDownloads(data.sessionsByDate, effectiveConfig)
   } catch (err) {
     if (generation !== fetchGeneration) return
     console.error(`Fetch inicial falló, reintentando en ${INITIAL_RETRY_DELAY_MS}ms:`, err.message)
@@ -87,6 +89,7 @@ const refreshCharlas = async (config) => {
     if (state.status === 'ready') {
       setState({ ...state, data: { ...state.data, dates, sessionsByDate } })
     }
+    enqueueDownloads(sessionsByDate, config)
     console.log('Refresh de charlas OK:', new Date().toISOString())
   } catch (err) {
     console.error('Refresh de charlas falló, se mantienen los datos previos:', err.message)
