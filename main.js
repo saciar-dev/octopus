@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
+const { execFile } = require('node:child_process')
 const { fetchSalas } = require('./src/main/apiClient')
 const {
   fetchInitialData,
@@ -18,6 +19,37 @@ const CONFIG_PATH = path.join(__dirname, 'config.json')
 let config = applyConfigDefaults(require('./config.json'))
 
 let mainWindow
+
+const PRESENTATION_EXTENSIONS = ['.ppt', '.pptx']
+
+const findPowerPointExecutable = () => {
+  const programFilesDirs = [
+    process.env['ProgramFiles'],
+    process.env['ProgramFiles(x86)'],
+  ].filter(Boolean)
+
+  const officeVersionDirs = [
+    'Office16', // Office 2016/2019/2021/365
+    'Office15', // Office 2013
+    'Office14', // Office 2010
+  ]
+
+  for (const programFilesDir of programFilesDirs) {
+    for (const officeVersionDir of officeVersionDirs) {
+      const candidate = path.join(programFilesDir, 'Microsoft Office', 'root', officeVersionDir, 'POWERPNT.EXE')
+      if (fs.existsSync(candidate)) {
+        return candidate
+      }
+
+      const candidateLegacy = path.join(programFilesDir, 'Microsoft Office', officeVersionDir, 'POWERPNT.EXE')
+      if (fs.existsSync(candidateLegacy)) {
+        return candidateLegacy
+      }
+    }
+  }
+
+  return null
+}
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -41,6 +73,19 @@ ipcMain.handle('open-presentation', async (_event, presentacion) => {
       localPath = await downloadOnDemand(presentacion, config)
     } catch (err) {
       return { success: false, error: `No se pudo descargar la presentación: ${err.message}` }
+    }
+  }
+
+  const extension = (presentacion.extension || '').toLowerCase()
+  if (PRESENTATION_EXTENSIONS.includes(extension)) {
+    const powerPointExecutable = findPowerPointExecutable()
+    if (powerPointExecutable) {
+      execFile(powerPointExecutable, ['/S', localPath], (error) => {
+        if (error) {
+          console.error('Error al abrir PowerPoint en modo presentación:', error)
+        }
+      })
+      return { success: true }
     }
   }
 

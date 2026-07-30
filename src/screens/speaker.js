@@ -92,10 +92,18 @@
       goBtn.textContent = 'Go'
       goBtn.addEventListener('click', async () => {
         goError.hidden = true
-        const result = await window.octopusBridge.openPresentation(speaker.presentacion.nombreArchivo)
-        if (!result.success) {
-          goError.textContent = result.error
-          goError.hidden = false
+        goBtn.disabled = true
+        const originalText = goBtn.textContent
+        goBtn.textContent = 'Abriendo...'
+        try {
+          const result = await window.octopusBridge.openPresentation(speaker.presentacion)
+          if (!result.success) {
+            goError.textContent = result.error
+            goError.hidden = false
+          }
+        } finally {
+          goBtn.disabled = false
+          goBtn.textContent = originalText
         }
       })
     }
