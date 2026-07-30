@@ -1,7 +1,7 @@
 (function () {
   let unsubscribeFromPrevious = null
 
-  function renderTable(sessions) {
+  function renderTable(bloques) {
     const table = document.createElement('table')
     table.className = 'schedule-table'
     table.innerHTML = `
@@ -14,15 +14,15 @@
         </tr>
       </thead>
       <tbody>
-        ${sessions
+        ${bloques
           .map(
-            (s) => `
-          <tr data-session-id="${s.id}">
-            <td>${s.enter}</td>
-            <td>${s.end}</td>
-            <td class="schedule-table-session">${s.title}</td>
+            (b) => `
+          <tr data-bloque-id="${b.id}">
+            <td>${b.enter}</td>
+            <td>${b.end}</td>
+            <td class="schedule-table-session">${b.name}</td>
             <td class="schedule-table-enter">
-              <button class="schedule-table-enter-btn" aria-label="enter" data-session-id="${s.id}">
+              <button class="schedule-table-enter-btn" aria-label="enter" data-bloque-id="${b.id}">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l12 7-12 7z" /></svg>
               </button>
             </td>
@@ -74,8 +74,8 @@
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
 
-    function enterSession(session) {
-      window.OctopusApp.show('session', { congress, session })
+    function enterBloque(bloque) {
+      window.OctopusApp.show('session', { congress, bloque })
     }
 
     function selectDate(date) {
@@ -83,15 +83,15 @@
       tabs.querySelectorAll('.tab').forEach((tabEl) => {
         tabEl.classList.toggle('tab--active', tabEl.dataset.date === date)
       })
-      const sessions = currentSessionsByDate[date] || []
+      const bloques = currentSessionsByDate[date] || []
       tableWrap.innerHTML = ''
-      const table = renderTable(sessions)
+      const table = renderTable(bloques)
       const enterButtons = []
-      table.querySelectorAll('tr[data-session-id]').forEach((row) => {
-        const session = sessions.find((s) => String(s.id) === row.dataset.sessionId)
+      table.querySelectorAll('tr[data-bloque-id]').forEach((row) => {
+        const bloque = bloques.find((b) => String(b.id) === row.dataset.bloqueId)
         const enterBtn = row.querySelector('.schedule-table-enter-btn')
-        row.querySelector('.schedule-table-session').addEventListener('click', () => enterSession(session))
-        enterBtn.addEventListener('click', () => enterSession(session))
+        row.querySelector('.schedule-table-session').addEventListener('click', () => enterBloque(bloque))
+        enterBtn.addEventListener('click', () => enterBloque(bloque))
         enterButtons.push(enterBtn)
       })
       tableWrap.appendChild(table)

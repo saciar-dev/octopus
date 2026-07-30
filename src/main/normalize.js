@@ -44,6 +44,19 @@ const normalizeCharla = (charla) => ({
   },
 })
 
+const normalizeBloque = (charlasDelBloque) => {
+  const sorted = [...charlasDelBloque].sort((a, b) => a.hora_ini.localeCompare(b.hora_ini))
+  const { bloque } = sorted[0]
+
+  return {
+    id: bloque.id,
+    name: bloque.nombre,
+    enter: truncateToHM(sorted[0].hora_ini),
+    end: truncateToHM(sorted[sorted.length - 1].hora_fin),
+    charlas: sorted.map(normalizeCharla),
+  }
+}
+
 const normalizeCharlas = (charlas, idSala) => {
   const charlasPorSala = charlas[String(idSala)] ?? {}
   const dates = Object.keys(charlasPorSala)
@@ -51,9 +64,9 @@ const normalizeCharlas = (charlas, idSala) => {
   const sessionsByDate = {}
   for (const date of dates) {
     const bloques = charlasPorSala[date]
-    const flattened = Object.values(bloques).flat()
-    flattened.sort((a, b) => a.hora_ini.localeCompare(b.hora_ini))
-    sessionsByDate[date] = flattened.map(normalizeCharla)
+    const bloqueList = Object.values(bloques).map(normalizeBloque)
+    bloqueList.sort((a, b) => a.enter.localeCompare(b.enter))
+    sessionsByDate[date] = bloqueList
   }
 
   return { dates, sessionsByDate }

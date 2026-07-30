@@ -1,5 +1,43 @@
 (function () {
-  function render({ congress, session }) {
+  function renderTable(charlas) {
+    const table = document.createElement('table')
+    table.className = 'schedule-table'
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Start</th>
+          <th>End</th>
+          <th>Speaker</th>
+          <th>Enter</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${charlas
+          .map((c) => {
+            const roleSuffix = window.OctopusRoleLabel.suffix(c.speaker.role)
+            return `
+          <tr data-charla-id="${c.id}">
+            <td>${c.enter}</td>
+            <td>${c.end}</td>
+            <td class="schedule-table-session">
+              <div class="schedule-table-session-speaker">${c.speaker.name}${roleSuffix}</div>
+              <div class="schedule-table-session-title">${c.title}</div>
+            </td>
+            <td class="schedule-table-enter">
+              <button class="schedule-table-enter-btn" aria-label="enter" data-charla-id="${c.id}">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l12 7-12 7z" /></svg>
+              </button>
+            </td>
+          </tr>
+        `
+          })
+          .join('')}
+      </tbody>
+    `
+    return table
+  }
+
+  function render({ congress, bloque }) {
     const el = document.createElement('div')
     el.className = 'screen screen-session'
 
@@ -8,25 +46,32 @@
 
     const label = document.createElement('div')
     label.className = 'section-label section-label--lg'
-    label.innerHTML = `<span class="section-label-bar"></span><span>${session.enter} - ${session.end}</span>`
+    label.innerHTML = `<span class="section-label-bar"></span><span>${bloque.enter} - ${bloque.end} · ${bloque.name}</span>`
 
-    const moderatorSuffix = session.speaker.role === 'MODERADOR' ? ' (Moderador)' : ''
-
-    const panel = document.createElement('div')
-    panel.className = 'session-panel session-panel--clickable'
-    panel.innerHTML = `
-      <div class="session-panel-speaker">${session.speaker.name}${moderatorSuffix}</div>
-      <div class="session-panel-title">${session.title}</div>
-    `
-    panel.addEventListener('click', () => {
-      window.OctopusApp.show('speaker', { congress, session })
-    })
+    const tableWrap = document.createElement('div')
+    tableWrap.className = 'schedule-table-wrap'
 
     const spacer = document.createElement('div')
     spacer.className = 'schedule-spacer'
 
+    function enterSpeaker(charla) {
+      window.OctopusApp.show('speaker', { congress, session: charla })
+    }
+
+    const table = renderTable(bloque.charlas)
+    const enterButtons = []
+    table.querySelectorAll('tr[data-charla-id]').forEach((row) => {
+      const charla = bloque.charlas.find((c) => String(c.id) === row.dataset.charlaId)
+      const enterBtn = row.querySelector('.schedule-table-enter-btn')
+      row.querySelector('.schedule-table-session').addEventListener('click', () => enterSpeaker(charla))
+      enterBtn.addEventListener('click', () => enterSpeaker(charla))
+      enterButtons.push(enterBtn)
+    })
+    tableWrap.appendChild(table)
+    window.OctopusKeyboard.setFocusGroup(enterButtons)
+
     body.appendChild(label)
-    body.appendChild(panel)
+    body.appendChild(tableWrap)
     body.appendChild(spacer)
 
     el.appendChild(window.OctopusChrome.renderHeader(congress))

@@ -36,7 +36,7 @@
 
     const name = document.createElement('div')
     name.className = 'speaker-name'
-    name.textContent = speaker.role === 'MODERADOR' ? `${speaker.name} (Moderador)` : speaker.name
+    name.textContent = `${speaker.name}${window.OctopusRoleLabel.suffix(speaker.role)}`
 
     const social = document.createElement('div')
     social.className = 'speaker-social'
