@@ -85,8 +85,8 @@ const refreshCharlas = async (config) => {
   }
 }
 
-const startPeriodicRefresh = (config) => {
-  setInterval(() => refreshCharlas(config), REFRESH_INTERVAL_MS)
+const startPeriodicRefresh = (getConfig) => {
+  setInterval(() => refreshCharlas(getConfig()), REFRESH_INTERVAL_MS)
 }
 
 module.exports = {
