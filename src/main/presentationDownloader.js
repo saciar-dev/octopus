@@ -56,6 +56,22 @@ const resolveLocalPath = (presentacion) => buildLocalPath(presentacion)
 
 let downloadQueue = []
 let queueRunning = false
+const inFlightDownloads = new Map()
+
+const runDownload = (presentacion, config) => {
+  const id = String(presentacion.id)
+  const existing = inFlightDownloads.get(id)
+  if (existing) {
+    return existing
+  }
+  const promise = downloadPresentacion(presentacion, config).finally(() => {
+    inFlightDownloads.delete(id)
+  })
+  inFlightDownloads.set(id, promise)
+  return promise
+}
+
+const downloadOnDemand = (presentacion, config) => runDownload(presentacion, config)
 
 const collectPresentaciones = (sessionsByDate) => {
   const presentaciones = []
@@ -78,7 +94,7 @@ const processQueue = async (config) => {
   while (downloadQueue.length > 0) {
     const presentacion = downloadQueue.shift()
     try {
-      await downloadPresentacion(presentacion, config)
+      await runDownload(presentacion, config)
     } catch (err) {
       console.error(`Error al descargar presentación ${presentacion.id}:`, err.message)
     }
@@ -95,4 +111,4 @@ const enqueueDownloads = (sessionsByDate, config) => {
   processQueue(config)
 }
 
-module.exports = { downloadPresentacion, isDownloaded, resolveLocalPath, enqueueDownloads }
+module.exports = { downloadPresentacion, isDownloaded, resolveLocalPath, enqueueDownloads, downloadOnDemand }
