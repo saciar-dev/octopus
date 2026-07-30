@@ -106,3 +106,20 @@
 
   --border-w: 1px;
 }
+
+:root[data-theme='dark'] {
+  --color-bg-page: var(--navy-900);
+  --color-bg-surface: var(--navy-800);
+  --color-bg-sunken: var(--navy-700);
+  --color-border: var(--navy-600);
+  --color-border-strong: var(--navy-500);
+  --color-text-heading: var(--neutral-white);
+  --color-text-body: var(--neutral-100);
+  --color-text-muted: var(--neutral-300);
+  --color-text-on-brand: var(--neutral-white);
+}
+
+:root[data-accent='green'] { --color-accent: var(--green-500); --color-accent-soft: #6bc796; }
+:root[data-accent='orange'] { --color-accent: var(--color-accent-warm); --color-accent-soft: #dda57e; }
+:root[data-accent='red'] { --color-accent: var(--red-500); --color-accent-soft: #ea8a78; }
+:root[data-accent='violet'] { --color-accent: #7c4fd1; --color-accent-soft: #b39aec; }

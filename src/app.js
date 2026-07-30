@@ -43,9 +43,20 @@ window.OctopusApp = (function () {
     window.octopusBridge.refreshCharlas()
   }
 
+  function applyThemeAttributes(state) {
+    const settings = state && state.settings
+    if (!settings) return
+    document.documentElement.dataset.theme = settings.theme
+    document.documentElement.dataset.accent = settings.accentColor
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    current = { name: 'splash', params: undefined }
-    renderCurrent()
+    window.octopusBridge.onStateUpdated(applyThemeAttributes)
+    window.octopusBridge.getState().then((state) => {
+      applyThemeAttributes(state)
+      current = { name: 'splash', params: undefined }
+      renderCurrent()
+    })
   })
 
   return { register, show, goBack, reset }
