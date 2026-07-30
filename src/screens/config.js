@@ -38,11 +38,136 @@
     return el
   }
 
-  function renderFormPlaceholder() {
+  const ACCENT_SWATCH_COLORS = {
+    blue: 'var(--blue-500)',
+    green: 'var(--green-500)',
+    orange: 'var(--color-accent-warm)',
+    red: 'var(--red-500)',
+    violet: '#7c4fd1',
+  }
+
+  function renderForm({ settings }) {
     const el = document.createElement('div')
-    el.className = 'config-form-placeholder'
-    el.textContent = 'Settings form (Step 9)'
-    return el
+    el.className = 'config-form'
+    el.innerHTML = `
+      <div class="config-field">
+        <label class="config-field-label" for="config-apiBaseUrl">API base URL</label>
+        <input class="config-input" type="text" id="config-apiBaseUrl" />
+      </div>
+      <div class="config-field">
+        <label class="config-field-label" for="config-codigoEvento">Event code</label>
+        <input class="config-input" type="text" id="config-codigoEvento" />
+      </div>
+      <div class="config-field">
+        <button class="btn btn--primary btn--lg config-fetch-salas" type="button">Search rooms</button>
+      </div>
+      <div class="config-field">
+        <label class="config-field-label" for="config-idSala">Room</label>
+        <select class="config-input" id="config-idSala"></select>
+      </div>
+      <div class="config-form-error" hidden></div>
+      <div class="config-field">
+        <div class="config-field-label">Theme</div>
+        <div class="tabs config-theme-tabs">
+          <button class="tab" type="button" data-theme-value="light">Light</button>
+          <button class="tab" type="button" data-theme-value="dark">Dark</button>
+        </div>
+      </div>
+      <div class="config-field">
+        <div class="config-field-label">Accent color</div>
+        <div class="config-accent-swatches">
+          <button class="config-accent-swatch" type="button" data-accent-value="blue" aria-label="Blue"></button>
+          <button class="config-accent-swatch" type="button" data-accent-value="green" aria-label="Green"></button>
+          <button class="config-accent-swatch" type="button" data-accent-value="orange" aria-label="Orange"></button>
+          <button class="config-accent-swatch" type="button" data-accent-value="red" aria-label="Red"></button>
+          <button class="config-accent-swatch" type="button" data-accent-value="violet" aria-label="Violet"></button>
+        </div>
+      </div>
+    `
+
+    const apiBaseUrlInput = el.querySelector('#config-apiBaseUrl')
+    const codigoEventoInput = el.querySelector('#config-codigoEvento')
+    const fetchSalasBtn = el.querySelector('.config-fetch-salas')
+    const idSalaSelect = el.querySelector('#config-idSala')
+    const errorEl = el.querySelector('.config-form-error')
+    const themeTabs = el.querySelectorAll('.config-theme-tabs .tab')
+    const accentSwatches = el.querySelectorAll('.config-accent-swatch')
+
+    apiBaseUrlInput.value = settings.apiBaseUrl
+    codigoEventoInput.value = settings.codigoEvento
+
+    let selectedTheme = settings.theme
+    let selectedAccent = settings.accentColor
+
+    function setSelectedTheme(theme) {
+      selectedTheme = theme
+      themeTabs.forEach((tab) => tab.classList.toggle('tab--active', tab.dataset.themeValue === theme))
+    }
+
+    function setSelectedAccent(accent) {
+      selectedAccent = accent
+      accentSwatches.forEach((swatch) =>
+        swatch.classList.toggle('config-accent-swatch--selected', swatch.dataset.accentValue === accent)
+      )
+    }
+
+    themeTabs.forEach((tab) => {
+      tab.addEventListener('click', () => setSelectedTheme(tab.dataset.themeValue))
+    })
+    accentSwatches.forEach((swatch) => {
+      swatch.style.background = ACCENT_SWATCH_COLORS[swatch.dataset.accentValue]
+      swatch.addEventListener('click', () => setSelectedAccent(swatch.dataset.accentValue))
+    })
+
+    setSelectedTheme(selectedTheme)
+    setSelectedAccent(selectedAccent)
+
+    function populateSalas(salas, selectedId) {
+      idSalaSelect.innerHTML = ''
+      for (const sala of salas) {
+        const option = document.createElement('option')
+        option.value = sala.id
+        option.textContent = sala.nombre
+        idSalaSelect.appendChild(option)
+      }
+      if (selectedId != null && salas.some((s) => String(s.id) === String(selectedId))) {
+        idSalaSelect.value = String(selectedId)
+      }
+    }
+
+    async function buscarSalas(selectedId) {
+      errorEl.hidden = true
+      errorEl.textContent = ''
+      try {
+        const salas = await window.octopusBridge.fetchSalas({
+          apiBaseUrl: apiBaseUrlInput.value,
+          codigoEvento: codigoEventoInput.value,
+        })
+        populateSalas(salas, selectedId)
+      } catch (err) {
+        errorEl.hidden = false
+        errorEl.textContent = 'Could not fetch rooms. Check the URL and event code.'
+      }
+    }
+
+    fetchSalasBtn.addEventListener('click', () => buscarSalas())
+
+    buscarSalas(settings.idSala)
+
+    return {
+      el,
+      getValues: () => ({
+        apiBaseUrl: apiBaseUrlInput.value,
+        codigoEvento: codigoEventoInput.value,
+        idSala: idSalaSelect.value ? Number(idSalaSelect.value) : null,
+        theme: selectedTheme,
+        accentColor: selectedAccent,
+      }),
+      showError: (message) => {
+        errorEl.hidden = false
+        errorEl.textContent = message
+      },
+    }
   }
 
   function render() {
@@ -63,7 +188,9 @@
 
     function showForm() {
       body.innerHTML = ''
-      body.appendChild(renderFormPlaceholder())
+      const settings = window.OctopusState.getState().settings
+      const form = renderForm({ settings })
+      body.appendChild(form.el)
     }
 
     showGate()

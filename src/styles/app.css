@@ -519,6 +519,48 @@ body {
   font-weight: var(--fw-medium);
 }
 
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 420px;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.config-theme-tabs {
+  align-self: flex-start;
+}
+
+.config-form-error {
+  color: var(--color-danger);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+}
+
+.config-accent-swatches {
+  display: flex;
+  gap: 12px;
+}
+
+.config-accent-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-circle);
+  border: 3px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.config-accent-swatch--selected {
+  border-color: var(--color-text-heading);
+}
+
 .speaker-go-error {
   position: fixed;
   left: 50%;
