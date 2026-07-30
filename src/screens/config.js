@@ -83,6 +83,9 @@
           <button class="config-accent-swatch" type="button" data-accent-value="violet" aria-label="Violet"></button>
         </div>
       </div>
+      <div class="config-field">
+        <button class="btn btn--primary btn--lg config-save" type="button">Save</button>
+      </div>
     `
 
     const apiBaseUrlInput = el.querySelector('#config-apiBaseUrl')
@@ -92,6 +95,7 @@
     const errorEl = el.querySelector('.config-form-error')
     const themeTabs = el.querySelectorAll('.config-theme-tabs .tab')
     const accentSwatches = el.querySelectorAll('.config-accent-swatch')
+    const saveBtn = el.querySelector('.config-save')
 
     apiBaseUrlInput.value = settings.apiBaseUrl
     codigoEventoInput.value = settings.codigoEvento
@@ -151,6 +155,34 @@
     }
 
     fetchSalasBtn.addEventListener('click', () => buscarSalas())
+
+    async function submitSave() {
+      const values = {
+        apiBaseUrl: apiBaseUrlInput.value,
+        codigoEvento: codigoEventoInput.value,
+        idSala: idSalaSelect.value ? Number(idSalaSelect.value) : null,
+        theme: selectedTheme,
+        accentColor: selectedAccent,
+      }
+
+      if (!values.apiBaseUrl || !values.codigoEvento || !values.idSala) {
+        errorEl.hidden = false
+        errorEl.textContent = 'Fill in the URL, event code and select a room before saving.'
+        return
+      }
+
+      saveBtn.disabled = true
+      const result = await window.octopusBridge.saveSettings(values)
+      if (result.success) {
+        window.OctopusApp.reset()
+      } else {
+        saveBtn.disabled = false
+        errorEl.hidden = false
+        errorEl.textContent = result.error || 'Could not save settings.'
+      }
+    }
+
+    saveBtn.addEventListener('click', submitSave)
 
     buscarSalas(settings.idSala)
 

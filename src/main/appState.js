@@ -47,6 +47,7 @@ const setSettings = (config) => {
 const fetchInitialData = async (config) => {
   const effectiveConfig = applyConfigDefaults(config)
   setSettings(effectiveConfig)
+  setState({ ...state, status: 'loading', error: null })
   try {
     const [congress, salas, charlas] = await Promise.all([
       fetchCongress(effectiveConfig),
