@@ -49,7 +49,7 @@
     unsubscribeFromPrevious = window.OctopusState.subscribe(applyState)
 
     el.querySelector('.splash-gear').addEventListener('click', () => {
-      console.log('[Octopus] Settings placeholder clicked')
+      window.OctopusApp.show('config')
     })
 
     playBtn.addEventListener('click', () => {
