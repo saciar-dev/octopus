@@ -1,8 +1,8 @@
 {
   "apiBaseUrl": "https://octopusmanager.space",
   "codigoEvento": "sadi-ic",
-  "idSala": 45,
+  "idSala": 23,
   "settingsPassword": "octopus2026",
   "theme": "light",
-  "accentColor": "orange"
+  "accentColor": "blue"
 }

@@ -1,6 +1,6 @@
 # SPEC 04 — Configuración de la app (conexión, tema y color de acento)
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 03 (datos-reales-api)
 > **Fecha:** 2026-07-30
 > **Objetivo:** Agregar una pantalla de configuración protegida por contraseña, accesible desde Splash, que permita editar apiBaseUrl/codigoEvento/idSala (con selección de sala vía dropdown) y elegir tema claro/oscuro y color de acento, persistiendo todo en config.json y aplicando los cambios sin reiniciar la app.
@@ -115,20 +115,20 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] `config.json` incluye `settingsPassword`, `theme` y `accentColor`, con defaults aplicados en `main.js` si alguna de las 3 claves falta.
-- [ ] Splash muestra un ícono de engranaje que navega a la pantalla `config`.
-- [ ] La pantalla `config` muestra primero un gate de contraseña; el formulario de configuración no es visible hasta ingresar la contraseña correcta.
-- [ ] Contraseña incorrecta muestra un mensaje de error visible y permite reintentar sin límite de intentos.
-- [ ] El formulario precarga los valores actuales de `apiBaseUrl`, `codigoEvento`, sala seleccionada, tema y color de acento.
-- [ ] El botón "Buscar salas" consulta `GET /api/{codigoEvento}/salas` con los valores tipeados (no persistidos) y puebla el dropdown de salas con los resultados reales.
-- [ ] Si "Buscar salas" falla (URL/código inválido), se muestra un error en el formulario y los valores tipeados no se pierden.
-- [ ] El selector de tema ofrece Claro y Oscuro; el selector de acento ofrece 5 swatches (Azul, Verde, Naranja, Rojo, Violeta), con Azul como default cuando no hay valor guardado.
-- [ ] Al presionar "Guardar" con datos válidos, `config.json` se reescribe con los nuevos valores de conexión, tema y acento.
-- [ ] Tras Guardar, la app dispara un refetch inmediato completo (congreso + salas + charlas) con los nuevos valores de conexión, sin reiniciar el proceso Electron, y navega a Splash mostrando el estado de carga hasta tener datos.
-- [ ] Tras Guardar, el tema y color de acento elegidos se aplican inmediatamente en toda la UI, sin recargar la ventana.
-- [ ] Al reiniciar `npm start`, la app arranca ya con el tema y color de acento guardados en `config.json` (sin parpadeo visible al tema/acento anterior).
-- [ ] Guardar con algún campo de conexión vacío o sin sala seleccionada muestra un error de validación y no escribe `config.json`.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01/02/03 (navegación, botón Go condicional, sufijo de rol, refresh periódico, botón reset) salvo los cambios explícitamente documentados en esta spec.
+- [x] `config.json` incluye `settingsPassword`, `theme` y `accentColor`, con defaults aplicados en `main.js` si alguna de las 3 claves falta.
+- [x] Splash muestra un ícono de engranaje que navega a la pantalla `config`.
+- [x] La pantalla `config` muestra primero un gate de contraseña; el formulario de configuración no es visible hasta ingresar la contraseña correcta.
+- [x] Contraseña incorrecta muestra un mensaje de error visible y permite reintentar sin límite de intentos.
+- [x] El formulario precarga los valores actuales de `apiBaseUrl`, `codigoEvento`, sala seleccionada, tema y color de acento.
+- [x] El botón "Buscar salas" consulta `GET /api/{codigoEvento}/salas` con los valores tipeados (no persistidos) y puebla el dropdown de salas con los resultados reales.
+- [x] Si "Buscar salas" falla (URL/código inválido), se muestra un error en el formulario y los valores tipeados no se pierden.
+- [x] El selector de tema ofrece Claro y Oscuro; el selector de acento ofrece 5 swatches (Azul, Verde, Naranja, Rojo, Violeta), con Azul como default cuando no hay valor guardado.
+- [x] Al presionar "Guardar" con datos válidos, `config.json` se reescribe con los nuevos valores de conexión, tema y acento.
+- [x] Tras Guardar, la app dispara un refetch inmediato completo (congreso + salas + charlas) con los nuevos valores de conexión, sin reiniciar el proceso Electron, y navega a Splash mostrando el estado de carga hasta tener datos.
+- [x] Tras Guardar, el tema y color de acento elegidos se aplican inmediatamente en toda la UI, sin recargar la ventana.
+- [x] Al reiniciar `npm start`, la app arranca ya con el tema y color de acento guardados en `config.json` (sin parpadeo visible al tema/acento anterior).
+- [x] Guardar con algún campo de conexión vacío o sin sala seleccionada muestra un error de validación y no escribe `config.json`.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01/02/03 (navegación, botón Go condicional, sufijo de rol, refresh periódico, botón reset) salvo los cambios explícitamente documentados en esta spec.
 
 ## Decisions
 

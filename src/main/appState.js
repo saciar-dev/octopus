@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS_PASSWORD = 'octopus2026'
 let state = { status: 'loading', data: null, error: null, settings: null }
 let refreshInFlight = false
 let listeners = []
+let fetchGeneration = 0
 
 const getState = () => state
 
@@ -45,15 +46,21 @@ const setSettings = (config) => {
 }
 
 const fetchInitialData = async (config) => {
+  const generation = ++fetchGeneration
   const effectiveConfig = applyConfigDefaults(config)
   setSettings(effectiveConfig)
   setState({ ...state, status: 'loading', error: null })
+  await runFetchAttempt(effectiveConfig, generation)
+}
+
+const runFetchAttempt = async (effectiveConfig, generation) => {
   try {
     const [congress, salas, charlas] = await Promise.all([
       fetchCongress(effectiveConfig),
       fetchSalas(effectiveConfig),
       fetchCharlas(effectiveConfig),
     ])
+    if (generation !== fetchGeneration) return
     setState({
       status: 'ready',
       data: normalizeState({ congress, salas, charlas, idSala: effectiveConfig.idSala }),
@@ -61,9 +68,10 @@ const fetchInitialData = async (config) => {
       settings: state.settings,
     })
   } catch (err) {
+    if (generation !== fetchGeneration) return
     console.error(`Fetch inicial falló, reintentando en ${INITIAL_RETRY_DELAY_MS}ms:`, err.message)
     setState({ status: 'error', data: null, error: err.message, settings: state.settings })
-    setTimeout(() => fetchInitialData(config), INITIAL_RETRY_DELAY_MS)
+    setTimeout(() => runFetchAttempt(effectiveConfig, generation), INITIAL_RETRY_DELAY_MS)
   }
 }
 
