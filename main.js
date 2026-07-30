@@ -2,6 +2,10 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
 const { execFile } = require('node:child_process')
+const config = require('./config.json')
+const { fetchInitialData, startPeriodicRefresh, getState, onStateChange, refreshCharlas } = require('./src/main/appState')
+
+let mainWindow
 
 const findPowerPointExecutable = () => {
   const programFilesDirs = [
@@ -42,6 +46,7 @@ const createWindow = () => {
   })
 
   win.loadFile('index.html')
+  mainWindow = win
 }
 
 ipcMain.handle('open-presentation', (_event, pptPath) => {
@@ -63,8 +68,20 @@ ipcMain.handle('open-presentation', (_event, pptPath) => {
   return { success: true }
 })
 
+ipcMain.handle('get-state', () => getState())
+
+ipcMain.handle('refresh-charlas', () => refreshCharlas(config))
+
+onStateChange((state) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('state-updated', state)
+  }
+})
+
 app.whenReady().then(() => {
   createWindow()
+  fetchInitialData(config)
+  startPeriodicRefresh(config)
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

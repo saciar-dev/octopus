@@ -1,5 +1,7 @@
 (function () {
-  function renderTable(sessions) {
+  let unsubscribeFromPrevious = null
+
+  function renderTable(bloques) {
     const table = document.createElement('table')
     table.className = 'schedule-table'
     table.innerHTML = `
@@ -12,15 +14,15 @@
         </tr>
       </thead>
       <tbody>
-        ${sessions
+        ${bloques
           .map(
-            (s) => `
-          <tr data-session-id="${s.id}">
-            <td>${s.enter}</td>
-            <td>${s.end}</td>
-            <td class="schedule-table-session">${s.title}</td>
+            (b) => `
+          <tr data-bloque-id="${b.id}">
+            <td>${b.enter}</td>
+            <td>${b.end}</td>
+            <td class="schedule-table-session">${b.name}</td>
             <td class="schedule-table-enter">
-              <button class="schedule-table-enter-btn" aria-label="enter" data-session-id="${s.id}">
+              <button class="schedule-table-enter-btn" aria-label="enter" data-bloque-id="${b.id}">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l12 7-12 7z" /></svg>
               </button>
             </td>
@@ -34,8 +36,14 @@
   }
 
   function render() {
-    const { congress, dates, sessionsByDate } = window.octopusData
-    let activeDate = dates[0]
+    if (unsubscribeFromPrevious) {
+      unsubscribeFromPrevious()
+      unsubscribeFromPrevious = null
+    }
+
+    const { congress, dates: initialDates } = window.OctopusState.getState().data
+    let activeDate = initialDates[0]
+    let currentSessionsByDate = {}
 
     const el = document.createElement('div')
     el.className = 'screen screen-schedule'
@@ -49,7 +57,6 @@
 
     const tabs = document.createElement('div')
     tabs.className = 'tabs'
-    tabs.innerHTML = dates.map((d) => `<button class="tab" data-date="${d}">${d}</button>`).join('')
 
     const tableWrap = document.createElement('div')
     tableWrap.className = 'schedule-table-wrap'
@@ -67,8 +74,8 @@
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
 
-    function enterSession(session) {
-      window.OctopusApp.show('session', { congress, session })
+    function enterBloque(bloque) {
+      window.OctopusApp.show('session', { congress, bloque })
     }
 
     function selectDate(date) {
@@ -76,26 +83,42 @@
       tabs.querySelectorAll('.tab').forEach((tabEl) => {
         tabEl.classList.toggle('tab--active', tabEl.dataset.date === date)
       })
-      const sessions = sessionsByDate[date] || []
+      const bloques = currentSessionsByDate[date] || []
       tableWrap.innerHTML = ''
-      const table = renderTable(sessions)
+      const table = renderTable(bloques)
       const enterButtons = []
-      table.querySelectorAll('tr[data-session-id]').forEach((row) => {
-        const session = sessions.find((s) => s.id === row.dataset.sessionId)
+      table.querySelectorAll('tr[data-bloque-id]').forEach((row) => {
+        const bloque = bloques.find((b) => String(b.id) === row.dataset.bloqueId)
         const enterBtn = row.querySelector('.schedule-table-enter-btn')
-        row.querySelector('.schedule-table-session').addEventListener('click', () => enterSession(session))
-        enterBtn.addEventListener('click', () => enterSession(session))
+        row.querySelector('.schedule-table-session').addEventListener('click', () => enterBloque(bloque))
+        enterBtn.addEventListener('click', () => enterBloque(bloque))
         enterButtons.push(enterBtn)
       })
       tableWrap.appendChild(table)
       window.OctopusKeyboard.setFocusGroup(enterButtons)
     }
 
-    tabs.querySelectorAll('.tab').forEach((tabEl) => {
-      tabEl.addEventListener('click', () => selectDate(tabEl.dataset.date))
-    })
+    function renderTabs(dates) {
+      tabs.innerHTML = dates.map((d) => `<button class="tab" data-date="${d}">${d}</button>`).join('')
+      tabs.querySelectorAll('.tab').forEach((tabEl) => {
+        tabEl.addEventListener('click', () => selectDate(tabEl.dataset.date))
+      })
+    }
 
-    selectDate(activeDate)
+    function applyData(data) {
+      currentSessionsByDate = data.sessionsByDate
+      renderTabs(data.dates)
+      const dateToShow = data.dates.includes(activeDate) ? activeDate : data.dates[0]
+      selectDate(dateToShow)
+    }
+
+    applyData(window.OctopusState.getState().data)
+
+    unsubscribeFromPrevious = window.OctopusState.subscribe((state) => {
+      if (state.status === 'ready') {
+        applyData(state.data)
+      }
+    })
 
     return el
   }
