@@ -1,5 +1,6 @@
 const { fetchCongress, fetchSalas, fetchCharlas } = require('./apiClient')
 const { normalizeState, normalizeCharlas } = require('./normalize')
+const { enqueueDownloads } = require('./presentationDownloader')
 
 const INITIAL_RETRY_DELAY_MS = 5000
 const REFRESH_INTERVAL_MS = 60 * 1000

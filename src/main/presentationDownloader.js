@@ -52,4 +52,47 @@ const downloadPresentacion = async (presentacion, config) => {
   return localPath
 }
 
-module.exports = { downloadPresentacion, isDownloaded }
+const resolveLocalPath = (presentacion) => buildLocalPath(presentacion)
+
+let downloadQueue = []
+let queueRunning = false
+
+const collectPresentaciones = (sessionsByDate) => {
+  const presentaciones = []
+  for (const bloques of Object.values(sessionsByDate)) {
+    for (const bloque of bloques) {
+      for (const charla of bloque.charlas) {
+        const presentacion = charla.speaker.presentacion
+        if (presentacion !== null) {
+          presentaciones.push(presentacion)
+        }
+      }
+    }
+  }
+  return presentaciones
+}
+
+const processQueue = async (config) => {
+  if (queueRunning) return
+  queueRunning = true
+  while (downloadQueue.length > 0) {
+    const presentacion = downloadQueue.shift()
+    try {
+      await downloadPresentacion(presentacion, config)
+    } catch (err) {
+      console.error(`Error al descargar presentación ${presentacion.id}:`, err.message)
+    }
+  }
+  queueRunning = false
+}
+
+const enqueueDownloads = (sessionsByDate, config) => {
+  const queuedIds = new Set(downloadQueue.map((p) => String(p.id)))
+  const pending = collectPresentaciones(sessionsByDate).filter(
+    (p) => !queuedIds.has(String(p.id)) && !isDownloaded(p)
+  )
+  downloadQueue.push(...pending)
+  processQueue(config)
+}
+
+module.exports = { downloadPresentacion, isDownloaded, resolveLocalPath, enqueueDownloads }
