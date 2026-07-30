@@ -467,6 +467,58 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+/* Config screen */
+
+.config-body {
+  flex: 1;
+  padding: 8px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.config-gate {
+  max-width: 360px;
+}
+
+.config-gate-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.config-field-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-muted);
+}
+
+.config-input {
+  height: 48px;
+  padding: 0 16px;
+  border: var(--border-w) solid var(--color-border);
+  border-radius: 0;
+  background: var(--color-bg-surface);
+  color: var(--color-text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+}
+
+.config-input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -1px;
+  border-color: var(--color-accent);
+}
+
+.config-gate-error {
+  color: var(--color-danger);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+}
+
 .speaker-go-error {
   position: fixed;
   left: 50%;
