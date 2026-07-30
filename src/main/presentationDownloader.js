@@ -24,6 +24,15 @@ const writeManifest = (manifest) => {
   fs.writeFileSync(getManifestPath(), JSON.stringify(manifest, null, 2))
 }
 
+const isDownloaded = (presentacion) => {
+  const manifest = readManifest()
+  const entry = manifest[String(presentacion.id)]
+  if (entry === undefined || entry !== presentacion.actualizado) {
+    return false
+  }
+  return fs.existsSync(buildLocalPath(presentacion))
+}
+
 const downloadPresentacion = async (presentacion, config) => {
   const url = buildDownloadUrl(presentacion, config)
   const response = await fetch(url)
@@ -43,4 +52,4 @@ const downloadPresentacion = async (presentacion, config) => {
   return localPath
 }
 
-module.exports = { downloadPresentacion }
+module.exports = { downloadPresentacion, isDownloaded }
