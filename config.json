@@ -1,8 +1,8 @@
 {
   "apiBaseUrl": "https://octopusmanager.space",
   "ftpBaseUrl": "https://octopus-ftp.space/",
-  "codigoEvento": "aaa-2026",
-  "idSala": 54,
+  "codigoEvento": "sadi-ic",
+  "idSala": 45,
   "settingsPassword": "octopus2026",
   "theme": "light",
   "accentColor": "blue"
