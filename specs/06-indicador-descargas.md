@@ -1,6 +1,6 @@
 # SPEC 06 — Indicador de descargas en curso
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 05 (descarga-presentaciones)
 > **Fecha:** 2026-07-31
 > **Objetivo:** Mostrar en el footer, visible en todas las pantallas, un indicador de texto en inglés con el progreso de la cola de descarga en background ("Downloading X/Y") y, si hubo fallos en el último escaneo, un mensaje de error temporal ("N failed"), sin tocar el estado de carga ya existente del botón Go.
@@ -78,16 +78,16 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Al arrancar `npm start` o disparar cualquier escaneo (fetch inicial, refresh periódico de 1 min, reset, guardado de config) con presentaciones pendientes, el footer muestra `"Downloading X/Y"` con un ícono de spinner animado, visible en la pantalla en la que esté parado el usuario.
-- [ ] El contador `X` sube a medida que se resuelven descargas (éxito o error) dentro del escaneo en curso.
-- [ ] Si durante un escaneo en curso se detectan más pendientes (ej. un refresh se dispara mientras otro escaneo todavía corre), `Y` se actualiza dinámicamente para reflejar el nuevo total combinado.
-- [ ] Si el escaneo termina sin ningún fallo, el footer vuelve a quedar vacío inmediatamente.
-- [ ] Si el escaneo termina con `N` fallos, el footer muestra `"N failed"` con un ícono de advertencia (signo de exclamación) durante unos segundos, y después vuelve a quedar vacío automáticamente (salvo que ya haya arrancado un nuevo escaneo antes de que se cumpla el timeout).
-- [ ] El contador de fallidas refleja solo el último escaneo, no es acumulativo entre escaneos.
-- [ ] El indicador es visible en las 5 pantallas (Splash, Schedule, Session, Speaker, Config) que usan el footer compartido, y se mantiene consistente al navegar entre ellas mientras un escaneo está en curso.
-- [ ] El estado de carga del botón "Go" (SPEC 05) no se ve afectado por este indicador — siguen siendo mecanismos independientes.
-- [ ] El texto del indicador está en inglés (`"Downloading X/Y"`, `"N failed"`), consistente con el resto del chrome de UI.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01-05 (navegación, descarga en background, botón Go, refresh periódico, reset, config, temas) salvo los cambios explícitamente documentados en esta spec.
+- [x] Al arrancar `npm start` o disparar cualquier escaneo (fetch inicial, refresh periódico de 1 min, reset, guardado de config) con presentaciones pendientes, el footer muestra `"Downloading X/Y"` con un ícono de spinner animado, visible en la pantalla en la que esté parado el usuario.
+- [x] El contador `X` sube a medida que se resuelven descargas (éxito o error) dentro del escaneo en curso.
+- [x] Si durante un escaneo en curso se detectan más pendientes (ej. un refresh se dispara mientras otro escaneo todavía corre), `Y` se actualiza dinámicamente para reflejar el nuevo total combinado.
+- [x] Si el escaneo termina sin ningún fallo, el footer vuelve a quedar vacío inmediatamente.
+- [x] Si el escaneo termina con `N` fallos, el footer muestra `"N failed"` con un ícono de advertencia (signo de exclamación) durante unos segundos, y después vuelve a quedar vacío automáticamente (salvo que ya haya arrancado un nuevo escaneo antes de que se cumpla el timeout).
+- [x] El contador de fallidas refleja solo el último escaneo, no es acumulativo entre escaneos.
+- [x] El indicador es visible en las 5 pantallas (Splash, Schedule, Session, Speaker, Config) que usan el footer compartido, y se mantiene consistente al navegar entre ellas mientras un escaneo está en curso.
+- [x] El estado de carga del botón "Go" (SPEC 05) no se ve afectado por este indicador — siguen siendo mecanismos independientes.
+- [x] El texto del indicador está en inglés (`"Downloading X/Y"`, `"N failed"`), consistente con el resto del chrome de UI.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01-05 (navegación, descarga en background, botón Go, refresh periódico, reset, config, temas) salvo los cambios explícitamente documentados en esta spec.
 
 ## Decisions
 
