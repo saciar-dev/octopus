@@ -64,9 +64,12 @@ const downloadPresentacion = async (presentacion, config, context) => {
 
 const resolveLocalPath = (presentacion, context) => buildLocalPath(presentacion, context)
 
+const FAILED_MESSAGE_DURATION_MS = 6000
+
 let downloadQueue = []
 let queueRunning = false
 let currentProgress = null
+let failedMessageTimeout = null
 const inFlightDownloads = new Map()
 
 const runDownload = (presentacion, config, context) => {
@@ -102,6 +105,10 @@ const collectPresentaciones = (sessionsByDate) => {
 const processQueue = async (config) => {
   if (queueRunning) return
   queueRunning = true
+  if (failedMessageTimeout) {
+    clearTimeout(failedMessageTimeout)
+    failedMessageTimeout = null
+  }
   currentProgress = { total: downloadQueue.length, resolved: 0, failed: 0 }
   emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
   while (downloadQueue.length > 0) {
@@ -118,6 +125,11 @@ const processQueue = async (config) => {
   queueRunning = false
   if (currentProgress.failed > 0) {
     emitProgress({ status: 'failed', failed: currentProgress.failed })
+    failedMessageTimeout = setTimeout(() => {
+      failedMessageTimeout = null
+      currentProgress = null
+      emitProgress({ status: 'idle' })
+    }, FAILED_MESSAGE_DURATION_MS)
   } else {
     emitProgress({ status: 'idle' })
     currentProgress = null
