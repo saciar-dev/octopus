@@ -1,7 +1,11 @@
 const fs = require('node:fs')
 const fsPromises = require('node:fs/promises')
 const path = require('node:path')
+const EventEmitter = require('node:events')
 const { app } = require('electron/main')
+
+const downloadEvents = new EventEmitter()
+const emitProgress = (payload) => downloadEvents.emit('progress', payload)
 
 const INVALID_PATH_CHARS = /[\\/:*?"<>|]/g
 
@@ -62,6 +66,7 @@ const resolveLocalPath = (presentacion, context) => buildLocalPath(presentacion,
 
 let downloadQueue = []
 let queueRunning = false
+let currentProgress = null
 const inFlightDownloads = new Map()
 
 const runDownload = (presentacion, config, context) => {
@@ -97,15 +102,26 @@ const collectPresentaciones = (sessionsByDate) => {
 const processQueue = async (config) => {
   if (queueRunning) return
   queueRunning = true
+  currentProgress = { total: downloadQueue.length, resolved: 0, failed: 0 }
+  emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
   while (downloadQueue.length > 0) {
     const { presentacion, context } = downloadQueue.shift()
     try {
       await runDownload(presentacion, config, context)
     } catch (err) {
       console.error(`Error al descargar presentación ${presentacion.id}:`, err.message)
+      currentProgress.failed += 1
     }
+    currentProgress.resolved += 1
+    emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
   }
   queueRunning = false
+  if (currentProgress.failed > 0) {
+    emitProgress({ status: 'failed', failed: currentProgress.failed })
+  } else {
+    emitProgress({ status: 'idle' })
+    currentProgress = null
+  }
 }
 
 const enqueueDownloads = (sessionsByDate, config) => {
@@ -114,7 +130,18 @@ const enqueueDownloads = (sessionsByDate, config) => {
     (item) => !queuedKeys.has(buildManifestKey(item.context)) && !isDownloaded(item.presentacion, item.context)
   )
   downloadQueue.push(...pending)
+  if (queueRunning && currentProgress && pending.length > 0) {
+    currentProgress.total += pending.length
+    emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
+  }
   processQueue(config)
 }
 
-module.exports = { downloadPresentacion, isDownloaded, resolveLocalPath, enqueueDownloads, downloadOnDemand }
+module.exports = {
+  downloadPresentacion,
+  isDownloaded,
+  resolveLocalPath,
+  enqueueDownloads,
+  downloadOnDemand,
+  downloadEvents,
+}
