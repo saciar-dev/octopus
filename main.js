@@ -12,7 +12,7 @@ const {
   applyConfigDefaults,
   setSettings,
 } = require('./src/main/appState')
-const { isDownloaded, resolveLocalPath, downloadOnDemand } = require('./src/main/presentationDownloader')
+const { isDownloaded, resolveLocalPath, downloadOnDemand, downloadEvents } = require('./src/main/presentationDownloader')
 
 const CONFIG_PATH = path.join(__dirname, 'config.json')
 
@@ -126,6 +126,12 @@ ipcMain.handle('save-settings', (_event, newSettings) => {
 onStateChange((state) => {
   if (mainWindow) {
     mainWindow.webContents.send('state-updated', state)
+  }
+})
+
+downloadEvents.on('progress', (payload) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('download-progress', payload)
   }
 })
 

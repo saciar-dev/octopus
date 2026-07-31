@@ -1,7 +1,11 @@
 const fs = require('node:fs')
 const fsPromises = require('node:fs/promises')
 const path = require('node:path')
+const EventEmitter = require('node:events')
 const { app } = require('electron/main')
+
+const downloadEvents = new EventEmitter()
+const emitProgress = (payload) => downloadEvents.emit('progress', payload)
 
 const INVALID_PATH_CHARS = /[\\/:*?"<>|]/g
 
@@ -60,8 +64,12 @@ const downloadPresentacion = async (presentacion, config, context) => {
 
 const resolveLocalPath = (presentacion, context) => buildLocalPath(presentacion, context)
 
+const FAILED_MESSAGE_DURATION_MS = 6000
+
 let downloadQueue = []
 let queueRunning = false
+let currentProgress = null
+let failedMessageTimeout = null
 const inFlightDownloads = new Map()
 
 const runDownload = (presentacion, config, context) => {
@@ -95,26 +103,60 @@ const collectPresentaciones = (sessionsByDate) => {
 }
 
 const processQueue = async (config) => {
-  if (queueRunning) return
+  if (queueRunning || downloadQueue.length === 0) return
   queueRunning = true
+  if (failedMessageTimeout) {
+    clearTimeout(failedMessageTimeout)
+    failedMessageTimeout = null
+  }
+  currentProgress = { total: downloadQueue.length, resolved: 0, failed: 0 }
+  emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
   while (downloadQueue.length > 0) {
     const { presentacion, context } = downloadQueue.shift()
     try {
       await runDownload(presentacion, config, context)
     } catch (err) {
       console.error(`Error al descargar presentación ${presentacion.id}:`, err.message)
+      currentProgress.failed += 1
     }
+    currentProgress.resolved += 1
+    emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
   }
   queueRunning = false
+  if (currentProgress.failed > 0) {
+    emitProgress({ status: 'failed', failed: currentProgress.failed })
+    failedMessageTimeout = setTimeout(() => {
+      failedMessageTimeout = null
+      currentProgress = null
+      emitProgress({ status: 'idle' })
+    }, FAILED_MESSAGE_DURATION_MS)
+  } else {
+    emitProgress({ status: 'idle' })
+    currentProgress = null
+  }
 }
 
 const enqueueDownloads = (sessionsByDate, config) => {
   const queuedKeys = new Set(downloadQueue.map((item) => buildManifestKey(item.context)))
   const pending = collectPresentaciones(sessionsByDate).filter(
-    (item) => !queuedKeys.has(buildManifestKey(item.context)) && !isDownloaded(item.presentacion, item.context)
+    (item) =>
+      !queuedKeys.has(buildManifestKey(item.context)) &&
+      !inFlightDownloads.has(buildManifestKey(item.context)) &&
+      !isDownloaded(item.presentacion, item.context)
   )
   downloadQueue.push(...pending)
+  if (queueRunning && currentProgress && pending.length > 0) {
+    currentProgress.total += pending.length
+    emitProgress({ status: 'downloading', total: currentProgress.total, resolved: currentProgress.resolved })
+  }
   processQueue(config)
 }
 
-module.exports = { downloadPresentacion, isDownloaded, resolveLocalPath, enqueueDownloads, downloadOnDemand }
+module.exports = {
+  downloadPresentacion,
+  isDownloaded,
+  resolveLocalPath,
+  enqueueDownloads,
+  downloadOnDemand,
+  downloadEvents,
+}
