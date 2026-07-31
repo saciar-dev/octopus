@@ -103,7 +103,7 @@ const collectPresentaciones = (sessionsByDate) => {
 }
 
 const processQueue = async (config) => {
-  if (queueRunning) return
+  if (queueRunning || downloadQueue.length === 0) return
   queueRunning = true
   if (failedMessageTimeout) {
     clearTimeout(failedMessageTimeout)
@@ -139,7 +139,10 @@ const processQueue = async (config) => {
 const enqueueDownloads = (sessionsByDate, config) => {
   const queuedKeys = new Set(downloadQueue.map((item) => buildManifestKey(item.context)))
   const pending = collectPresentaciones(sessionsByDate).filter(
-    (item) => !queuedKeys.has(buildManifestKey(item.context)) && !isDownloaded(item.presentacion, item.context)
+    (item) =>
+      !queuedKeys.has(buildManifestKey(item.context)) &&
+      !inFlightDownloads.has(buildManifestKey(item.context)) &&
+      !isDownloaded(item.presentacion, item.context)
   )
   downloadQueue.push(...pending)
   if (queueRunning && currentProgress && pending.length > 0) {
