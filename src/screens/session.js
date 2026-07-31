@@ -37,7 +37,7 @@
     return table
   }
 
-  function render({ congress, bloque }) {
+  function render({ congress, bloque, fecha }) {
     const el = document.createElement('div')
     el.className = 'screen screen-session'
 
@@ -55,7 +55,7 @@
     spacer.className = 'schedule-spacer'
 
     function enterSpeaker(charla) {
-      window.OctopusApp.show('speaker', { congress, session: charla })
+      window.OctopusApp.show('speaker', { congress, session: charla, fecha })
     }
 
     const table = renderTable(bloque.charlas)

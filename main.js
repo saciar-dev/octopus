@@ -64,13 +64,14 @@ const createWindow = () => {
   mainWindow = win
 }
 
-ipcMain.handle('open-presentation', async (_event, presentacion) => {
+ipcMain.handle('open-presentation', async (_event, { presentacion, fecha, disertante, charlaId }) => {
+  const context = { fecha, disertante, charlaId }
   let localPath
-  if (isDownloaded(presentacion)) {
-    localPath = resolveLocalPath(presentacion)
+  if (isDownloaded(presentacion, context)) {
+    localPath = resolveLocalPath(presentacion, context)
   } else {
     try {
-      localPath = await downloadOnDemand(presentacion, config)
+      localPath = await downloadOnDemand(presentacion, config, context)
     } catch (err) {
       return { success: false, error: `No se pudo descargar la presentación: ${err.message}` }
     }

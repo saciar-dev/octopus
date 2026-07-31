@@ -14,7 +14,22 @@
       .join('')
   }
 
-  function render({ congress, session }) {
+  // Busca la presentación más reciente en el estado en vivo, en vez de confiar en el
+  // `session.speaker.presentacion` capturado al navegar: si el usuario se queda en esta
+  // pantalla y llega un refresh en background con un `actualizado` nuevo, ese objeto
+  // capturado queda desactualizado y el click en Go seguiría usando la versión vieja.
+  function findCurrentPresentacion(fecha, charlaId, fallback) {
+    const data = window.OctopusState.getState().data
+    const bloques = data && data.sessionsByDate[fecha]
+    if (!bloques) return fallback
+    for (const bloque of bloques) {
+      const charla = bloque.charlas.find((c) => c.id === charlaId)
+      if (charla) return charla.speaker.presentacion
+    }
+    return fallback
+  }
+
+  function render({ congress, session, fecha }) {
     const speaker = session.speaker
 
     const el = document.createElement('div')
@@ -91,17 +106,29 @@
       goBtn.className = 'btn btn--primary btn--lg'
       goBtn.textContent = 'Go'
       goBtn.addEventListener('click', async () => {
+        const MIN_LOADING_MS = 600
         goError.hidden = true
         goBtn.disabled = true
         const originalText = goBtn.textContent
         goBtn.textContent = 'Abriendo...'
+        const start = Date.now()
         try {
-          const result = await window.octopusBridge.openPresentation(speaker.presentacion)
+          const currentPresentacion = findCurrentPresentacion(fecha, session.id, speaker.presentacion)
+          const result = await window.octopusBridge.openPresentation({
+            presentacion: currentPresentacion,
+            fecha,
+            disertante: speaker.name,
+            charlaId: session.id,
+          })
           if (!result.success) {
             goError.textContent = result.error
             goError.hidden = false
           }
         } finally {
+          const elapsed = Date.now() - start
+          if (elapsed < MIN_LOADING_MS) {
+            await new Promise((resolve) => setTimeout(resolve, MIN_LOADING_MS - elapsed))
+          }
           goBtn.disabled = false
           goBtn.textContent = originalText
         }

@@ -3,14 +3,20 @@ const fsPromises = require('node:fs/promises')
 const path = require('node:path')
 const { app } = require('electron/main')
 
+const INVALID_PATH_CHARS = /[\\/:*?"<>|]/g
+
 const getPresentacionesDir = () => path.join(app.getPath('userData'), 'presentaciones')
 const getManifestPath = () => path.join(getPresentacionesDir(), 'manifest.json')
 
 const buildDownloadUrl = (presentacion, config) =>
-  `${config.ftpBaseUrl.replace(/\/$/, '')}/sync/ftpspace/${config.codigoEvento}/${presentacion.nombreArchivo}`
+  `${config.ftpBaseUrl.replace(/\/$/, '')}/sync/ftpspace/${config.codigoEvento}/${presentacion.nombreArchivo}?v=${encodeURIComponent(presentacion.actualizado)}`
 
-const buildLocalPath = (presentacion) =>
-  path.join(getPresentacionesDir(), `${presentacion.id}${presentacion.extension}`)
+const sanitizeForPath = (value) => value.replace(INVALID_PATH_CHARS, '_').trim()
+
+const buildLocalPath = (presentacion, context) =>
+  path.join(getPresentacionesDir(), context.fecha, sanitizeForPath(context.disertante), presentacion.nombreArchivo)
+
+const buildManifestKey = (context) => `${context.fecha}_${context.charlaId}`
 
 const readManifest = () => {
   try {
@@ -24,77 +30,77 @@ const writeManifest = (manifest) => {
   fs.writeFileSync(getManifestPath(), JSON.stringify(manifest, null, 2))
 }
 
-const isDownloaded = (presentacion) => {
+const isDownloaded = (presentacion, context) => {
   const manifest = readManifest()
-  const entry = manifest[String(presentacion.id)]
+  const entry = manifest[buildManifestKey(context)]
   if (entry === undefined || entry !== presentacion.actualizado) {
     return false
   }
-  return fs.existsSync(buildLocalPath(presentacion))
+  return fs.existsSync(buildLocalPath(presentacion, context))
 }
 
-const downloadPresentacion = async (presentacion, config) => {
+const downloadPresentacion = async (presentacion, config, context) => {
   const url = buildDownloadUrl(presentacion, config)
-  const response = await fetch(url)
+  const response = await fetch(url, { cache: 'no-store' })
   if (!response.ok) {
     throw new Error(`Descarga de presentación falló (${response.status}): ${url}`)
   }
   const buffer = Buffer.from(await response.arrayBuffer())
 
-  await fsPromises.mkdir(getPresentacionesDir(), { recursive: true })
-  const localPath = buildLocalPath(presentacion)
+  const localPath = buildLocalPath(presentacion, context)
+  await fsPromises.mkdir(path.dirname(localPath), { recursive: true })
   await fsPromises.writeFile(localPath, buffer)
 
   const manifest = readManifest()
-  manifest[String(presentacion.id)] = presentacion.actualizado
+  manifest[buildManifestKey(context)] = presentacion.actualizado
   writeManifest(manifest)
 
   return localPath
 }
 
-const resolveLocalPath = (presentacion) => buildLocalPath(presentacion)
+const resolveLocalPath = (presentacion, context) => buildLocalPath(presentacion, context)
 
 let downloadQueue = []
 let queueRunning = false
 const inFlightDownloads = new Map()
 
-const runDownload = (presentacion, config) => {
-  const id = String(presentacion.id)
-  const existing = inFlightDownloads.get(id)
+const runDownload = (presentacion, config, context) => {
+  const key = buildManifestKey(context)
+  const existing = inFlightDownloads.get(key)
   if (existing) {
     return existing
   }
-  const promise = downloadPresentacion(presentacion, config).finally(() => {
-    inFlightDownloads.delete(id)
+  const promise = downloadPresentacion(presentacion, config, context).finally(() => {
+    inFlightDownloads.delete(key)
   })
-  inFlightDownloads.set(id, promise)
+  inFlightDownloads.set(key, promise)
   return promise
 }
 
-const downloadOnDemand = (presentacion, config) => runDownload(presentacion, config)
+const downloadOnDemand = (presentacion, config, context) => runDownload(presentacion, config, context)
 
 const collectPresentaciones = (sessionsByDate) => {
-  const presentaciones = []
-  for (const bloques of Object.values(sessionsByDate)) {
+  const items = []
+  for (const [fecha, bloques] of Object.entries(sessionsByDate)) {
     for (const bloque of bloques) {
       for (const charla of bloque.charlas) {
         const presentacion = charla.speaker.presentacion
         if (presentacion !== null) {
-          presentaciones.push(presentacion)
+          items.push({ presentacion, context: { fecha, disertante: charla.speaker.name, charlaId: charla.id } })
         }
       }
     }
   }
-  return presentaciones
+  return items
 }
 
 const processQueue = async (config) => {
   if (queueRunning) return
   queueRunning = true
   while (downloadQueue.length > 0) {
-    const presentacion = downloadQueue.shift()
+    const { presentacion, context } = downloadQueue.shift()
     try {
-      await runDownload(presentacion, config)
+      await runDownload(presentacion, config, context)
     } catch (err) {
       console.error(`Error al descargar presentación ${presentacion.id}:`, err.message)
     }
@@ -103,9 +109,9 @@ const processQueue = async (config) => {
 }
 
 const enqueueDownloads = (sessionsByDate, config) => {
-  const queuedIds = new Set(downloadQueue.map((p) => String(p.id)))
+  const queuedKeys = new Set(downloadQueue.map((item) => buildManifestKey(item.context)))
   const pending = collectPresentaciones(sessionsByDate).filter(
-    (p) => !queuedIds.has(String(p.id)) && !isDownloaded(p)
+    (item) => !queuedKeys.has(buildManifestKey(item.context)) && !isDownloaded(item.presentacion, item.context)
   )
   downloadQueue.push(...pending)
   processQueue(config)
