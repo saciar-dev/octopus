@@ -12,4 +12,9 @@ contextBridge.exposeInMainWorld('octopusBridge', {
     ipcRenderer.on('state-updated', listener)
     return () => ipcRenderer.removeListener('state-updated', listener)
   },
+  onDownloadProgress: (callback) => {
+    const listener = (_event, payload) => callback(payload)
+    ipcRenderer.on('download-progress', listener)
+    return () => ipcRenderer.removeListener('download-progress', listener)
+  },
 })
