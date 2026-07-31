@@ -75,7 +75,7 @@
     el.appendChild(window.OctopusChrome.renderFooter())
 
     function enterBloque(bloque) {
-      window.OctopusApp.show('session', { congress, bloque })
+      window.OctopusApp.show('session', { congress, bloque, fecha: activeDate })
     }
 
     function selectDate(date) {

@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('octopusBridge', {
-  openPresentation: (pptPath) => ipcRenderer.invoke('open-presentation', pptPath),
+  openPresentation: (payload) => ipcRenderer.invoke('open-presentation', payload),
   getState: () => ipcRenderer.invoke('get-state'),
   refreshCharlas: () => ipcRenderer.invoke('refresh-charlas'),
   verifySettingsPassword: (password) => ipcRenderer.invoke('verify-settings-password', password),

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron/main')
+const { app, BrowserWindow, ipcMain, shell } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
 const { execFile } = require('node:child_process')
@@ -12,12 +12,15 @@ const {
   applyConfigDefaults,
   setSettings,
 } = require('./src/main/appState')
+const { isDownloaded, resolveLocalPath, downloadOnDemand } = require('./src/main/presentationDownloader')
 
 const CONFIG_PATH = path.join(__dirname, 'config.json')
 
 let config = applyConfigDefaults(require('./config.json'))
 
 let mainWindow
+
+const PRESENTATION_EXTENSIONS = ['.ppt', '.pptx']
 
 const findPowerPointExecutable = () => {
   const programFilesDirs = [
@@ -61,21 +64,36 @@ const createWindow = () => {
   mainWindow = win
 }
 
-ipcMain.handle('open-presentation', (_event, pptPath) => {
-  if (!fs.existsSync(pptPath)) {
-    return { success: false, error: `No se encontró el archivo de presentación: ${pptPath}` }
-  }
-
-  const powerPointExecutable = findPowerPointExecutable()
-  if (!powerPointExecutable) {
-    return { success: false, error: 'No se encontró PowerPoint instalado en este equipo.' }
-  }
-
-  execFile(powerPointExecutable, ['/S', pptPath], (error) => {
-    if (error) {
-      console.error('Error al abrir PowerPoint:', error)
+ipcMain.handle('open-presentation', async (_event, { presentacion, fecha, disertante, charlaId }) => {
+  const context = { fecha, disertante, charlaId }
+  let localPath
+  if (isDownloaded(presentacion, context)) {
+    localPath = resolveLocalPath(presentacion, context)
+  } else {
+    try {
+      localPath = await downloadOnDemand(presentacion, config, context)
+    } catch (err) {
+      return { success: false, error: `No se pudo descargar la presentación: ${err.message}` }
     }
-  })
+  }
+
+  const extension = (presentacion.extension || '').toLowerCase()
+  if (PRESENTATION_EXTENSIONS.includes(extension)) {
+    const powerPointExecutable = findPowerPointExecutable()
+    if (powerPointExecutable) {
+      execFile(powerPointExecutable, ['/S', localPath], (error) => {
+        if (error) {
+          console.error('Error al abrir PowerPoint en modo presentación:', error)
+        }
+      })
+      return { success: true }
+    }
+  }
+
+  const openError = await shell.openPath(localPath)
+  if (openError) {
+    return { success: false, error: `No se pudo abrir el archivo de presentación: ${openError}` }
+  }
 
   return { success: true }
 })
