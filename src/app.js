@@ -65,6 +65,10 @@ window.OctopusApp = (function () {
     window.octopusBridge.refreshCharlas()
   }
 
+  function refreshInPlace() {
+    window.octopusBridge.refreshCharlas()
+  }
+
   function applyThemeAttributes(state) {
     const settings = state && state.settings
     if (!settings) return
@@ -85,5 +89,5 @@ window.OctopusApp = (function () {
     })
   })
 
-  return { register, show, goBack, reset }
+  return { register, show, goBack, reset, refreshInPlace }
 })()

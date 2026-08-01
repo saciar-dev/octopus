@@ -46,7 +46,7 @@ window.OctopusChrome = (function () {
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         if (onReset) onReset()
-        else window.OctopusApp.reset()
+        else window.OctopusApp.refreshInPlace()
       })
     }
     if (extra) el.appendChild(extra)

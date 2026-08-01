@@ -1,4 +1,6 @@
 (function () {
+  let unsubscribeFromPrevious = null
+
   function renderTable(charlas) {
     const table = document.createElement('table')
     table.className = 'schedule-table'
@@ -38,6 +40,11 @@
   }
 
   function render({ congress, bloque, fecha }) {
+    if (unsubscribeFromPrevious) {
+      unsubscribeFromPrevious()
+      unsubscribeFromPrevious = null
+    }
+
     const el = document.createElement('div')
     el.className = 'screen screen-session'
 
@@ -58,17 +65,32 @@
       window.OctopusApp.show('speaker', { congress, session: charla, fecha })
     }
 
-    const table = renderTable(bloque.charlas)
-    const enterButtons = []
-    table.querySelectorAll('tr[data-charla-id]').forEach((row) => {
-      const charla = bloque.charlas.find((c) => String(c.id) === row.dataset.charlaId)
-      const enterBtn = row.querySelector('.schedule-table-enter-btn')
-      row.querySelector('.schedule-table-session').addEventListener('click', () => enterSpeaker(charla))
-      enterBtn.addEventListener('click', () => enterSpeaker(charla))
-      enterButtons.push(enterBtn)
-    })
-    tableWrap.appendChild(table)
-    window.OctopusKeyboard.setFocusGroup(enterButtons)
+    function renderCharlas(charlas) {
+      tableWrap.innerHTML = ''
+      const table = renderTable(charlas)
+      const enterButtons = []
+      table.querySelectorAll('tr[data-charla-id]').forEach((row) => {
+        const charla = charlas.find((c) => String(c.id) === row.dataset.charlaId)
+        const enterBtn = row.querySelector('.schedule-table-enter-btn')
+        row.querySelector('.schedule-table-session').addEventListener('click', () => enterSpeaker(charla))
+        enterBtn.addEventListener('click', () => enterSpeaker(charla))
+        enterButtons.push(enterBtn)
+      })
+      tableWrap.appendChild(table)
+      window.OctopusKeyboard.setFocusGroup(enterButtons)
+    }
+
+    function applyData(data) {
+      const bloques = data.sessionsByDate[fecha] || []
+      const bloqueEncontrado = bloques.find((b) => String(b.id) === String(bloque.id))
+      if (!bloqueEncontrado) {
+        window.OctopusApp.show('schedule')
+        return
+      }
+      renderCharlas(bloqueEncontrado.charlas)
+    }
+
+    renderCharlas(bloque.charlas)
 
     body.appendChild(label)
     body.appendChild(tableWrap)
@@ -78,6 +100,19 @@
     el.appendChild(body)
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
+
+    Promise.resolve().then(() => {
+      const state = window.OctopusState.getState()
+      if (state.status === 'ready') {
+        applyData(state.data)
+      }
+    })
+
+    unsubscribeFromPrevious = window.OctopusState.subscribe((state) => {
+      if (state.status === 'ready') {
+        applyData(state.data)
+      }
+    })
 
     return el
   }
