@@ -2,6 +2,7 @@ window.OctopusApp = (function () {
   const root = document.getElementById('app')
   const screens = {}
   const history = []
+  const downloadListeners = []
   let current = null
   let lastDownloadPayload = { status: 'idle' }
 
@@ -13,15 +14,14 @@ window.OctopusApp = (function () {
     let modifier = ''
     let html = ''
     if (payload.status === 'downloading') {
-      modifier = ' screen-footer--downloading'
+      modifier = ' footer-progress-overlay--visible'
       html = `${DOWNLOAD_SPINNER_ICON}<span class="footer-progress-text">Downloading ${payload.resolved}/${payload.total}</span>`
     } else if (payload.status === 'failed') {
-      modifier = ' screen-footer--failed'
+      modifier = ' footer-progress-overlay--visible footer-progress-overlay--failed'
       html = `${DOWNLOAD_WARNING_ICON}<span class="footer-progress-text">${payload.failed} failed</span>`
     }
     document.querySelectorAll('.screen-footer').forEach((footer) => {
-      footer.className = `screen-footer${modifier}`
-      footer.innerHTML = html
+      footer.innerHTML = `<div class="footer-progress-overlay${modifier}">${html}</div>`
     })
   }
 
@@ -69,6 +69,18 @@ window.OctopusApp = (function () {
     window.octopusBridge.refreshCharlas()
   }
 
+  function getDownloadPayload() {
+    return lastDownloadPayload
+  }
+
+  function subscribeDownload(listener) {
+    downloadListeners.push(listener)
+    return () => {
+      const index = downloadListeners.indexOf(listener)
+      if (index !== -1) downloadListeners.splice(index, 1)
+    }
+  }
+
   function applyThemeAttributes(state) {
     const settings = state && state.settings
     if (!settings) return
@@ -81,6 +93,7 @@ window.OctopusApp = (function () {
     window.octopusBridge.onDownloadProgress((payload) => {
       lastDownloadPayload = payload
       updateDownloadFooters()
+      downloadListeners.forEach((listener) => listener(payload))
     })
     window.octopusBridge.getState().then((state) => {
       applyThemeAttributes(state)
@@ -89,5 +102,5 @@ window.OctopusApp = (function () {
     })
   })
 
-  return { register, show, goBack, reset, refreshInPlace }
+  return { register, show, goBack, reset, refreshInPlace, subscribeDownload, getDownloadPayload }
 })()

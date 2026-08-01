@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron/main')
+const { app, BrowserWindow, ipcMain, shell, screen } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
 const { execFile } = require('node:child_process')
@@ -59,6 +59,10 @@ const createWindow = () => {
       sandbox: false
     }
   })
+
+  const notifyDisplayChanged = () => win.webContents.send('display-changed')
+  win.on('resize', notifyDisplayChanged)
+  win.on('move', notifyDisplayChanged)
 
   win.loadFile('index.html')
   mainWindow = win
@@ -139,6 +143,10 @@ app.whenReady().then(() => {
   createWindow()
   fetchInitialData(config)
   startPeriodicRefresh(() => config)
+
+  screen.on('display-metrics-changed', () => {
+    if (mainWindow) mainWindow.webContents.send('display-changed')
+  })
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

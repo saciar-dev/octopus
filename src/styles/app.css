@@ -12,9 +12,19 @@ body {
   background: var(--color-bg-page);
 }
 
+/*
+  La app se diseña para un lienzo fijo de 1920x1080 y se escala como
+  un todo (ver src/scale.js) para verse igual en notebooks 1366x768,
+  pantallas HD 1920x1080 y pantallas 4K, ya que las tres comparten
+  relación de aspecto 16:9.
+*/
 #app {
-  height: 100vh;
-  width: 100vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
 }
 
 .screen {
@@ -26,20 +36,31 @@ body {
 
 .screen-footer {
   height: 10px;
+  flex-shrink: 0;
   background: var(--color-brand-primary);
+  position: relative;
+}
+
+.footer-progress-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 0;
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0;
+  padding: 0 16px;
+  background: var(--color-bg-page);
   overflow: hidden;
-  transition: height 0.15s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: height 0.15s ease, opacity 0.15s ease;
 }
 
-.screen-footer--downloading,
-.screen-footer--failed {
+.footer-progress-overlay--visible {
   height: 28px;
-  background: var(--color-bg-page);
-  padding: 0 16px;
+  opacity: 1;
 }
 
 .footer-progress-icon {
@@ -54,8 +75,8 @@ body {
   color: var(--color-text-muted);
 }
 
-.screen-footer--failed .footer-progress-icon,
-.screen-footer--failed .footer-progress-text {
+.footer-progress-overlay--failed .footer-progress-icon,
+.footer-progress-overlay--failed .footer-progress-text {
   color: var(--color-danger);
 }
 
@@ -103,10 +124,20 @@ body {
 
 /* Splash screen */
 
-.splash-topbar {
-  height: 44px;
-  background: var(--neutral-100);
-  border-bottom: var(--border-w) solid var(--color-border);
+.splash-wave {
+  position: relative;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.splash-wave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.splash-wave svg path {
+  fill: var(--navy-700);
 }
 
 .splash-body {
@@ -115,16 +146,26 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+}
+
+.splash-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 12px;
+  margin-top: 120px;
 }
 
 .splash-gear {
   position: absolute;
-  top: 24px;
+  bottom: 24px;
   right: 28px;
   width: 46px;
   height: 46px;
+  z-index: 1;
 }
 
 .splash-gear svg {
@@ -132,19 +173,143 @@ body {
   height: 20px;
 }
 
-.splash-logo {
-  height: 160px;
+.splash-mascot {
+  height: 170px;
+  filter: drop-shadow(var(--shadow-md));
+  margin-top: -36px;
+}
+
+.splash-word {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 52px;
+  color: var(--color-brand-primary);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.splash-sub {
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-body-lg);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  margin: 0;
+}
+
+.splash-pulse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  width: 200px;
+  padding-bottom: 36px;
+}
+
+.splash-pulse-trace {
+  width: 100%;
+  height: 32px;
+}
+
+.splash-pulse-trace path {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.splash-pulse-trace-drop {
+  display: none;
+}
+
+.splash-pulse.is-error .splash-pulse-trace-beat {
+  display: none;
+}
+
+.splash-pulse.is-error .splash-pulse-trace-drop {
+  display: block;
+}
+
+.splash-pulse-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-muted);
+}
+
+.splash-pulse.is-ready .splash-pulse-trace path {
+  stroke: var(--color-success);
+}
+
+.splash-pulse.is-loading .splash-pulse-trace path {
+  stroke: var(--color-accent);
+}
+
+.splash-pulse.is-error .splash-pulse-trace path {
+  stroke: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .splash-pulse.is-ready .splash-pulse-trace path {
+    animation: splash-pulse-beat 2.4s ease-in-out infinite;
+  }
+
+  .splash-pulse.is-loading .splash-pulse-trace path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: splash-pulse-draw 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes splash-pulse-beat {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes splash-pulse-draw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
 }
 
 .splash-play {
   width: 76px;
   height: 76px;
-  margin-top: 24px;
 }
 
 .splash-play svg {
   width: 26px;
   height: 26px;
+}
+
+:root[data-theme='dark'] .screen-splash {
+  background: var(--neutral-900);
+}
+
+:root[data-theme='dark'] .screen-splash .splash-wave svg path {
+  fill: var(--neutral-700);
+}
+
+:root[data-theme='dark'] .screen-splash .splash-word {
+  color: var(--color-text-heading);
+}
+
+:root[data-theme='dark'] .screen-splash .splash-sub,
+:root[data-theme='dark'] .screen-splash .splash-pulse-label {
+  color: var(--color-text-muted);
 }
 
 /* Shared chrome (Header / floating actions) */
