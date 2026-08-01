@@ -17,4 +17,9 @@ contextBridge.exposeInMainWorld('octopusBridge', {
     ipcRenderer.on('download-progress', listener)
     return () => ipcRenderer.removeListener('download-progress', listener)
   },
+  onDisplayChanged: (callback) => {
+    const listener = () => callback()
+    ipcRenderer.on('display-changed', listener)
+    return () => ipcRenderer.removeListener('display-changed', listener)
+  },
 })
