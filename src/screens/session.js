@@ -101,6 +101,13 @@
     el.appendChild(window.OctopusChrome.renderFloatingActions())
     el.appendChild(window.OctopusChrome.renderFooter())
 
+    Promise.resolve().then(() => {
+      const state = window.OctopusState.getState()
+      if (state.status === 'ready') {
+        applyData(state.data)
+      }
+    })
+
     unsubscribeFromPrevious = window.OctopusState.subscribe((state) => {
       if (state.status === 'ready') {
         applyData(state.data)

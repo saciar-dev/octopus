@@ -66,7 +66,6 @@ window.OctopusApp = (function () {
   }
 
   function refreshInPlace() {
-    history.length = 0
     window.octopusBridge.refreshCharlas()
   }
 
