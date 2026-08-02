@@ -13,6 +13,7 @@ const {
   setSettings,
 } = require('./src/main/appState')
 const { isDownloaded, resolveLocalPath, downloadOnDemand, downloadEvents } = require('./src/main/presentationDownloader')
+const { findKeynoteApp, openInKeynote } = require('./src/main/keynoteOpener')
 
 const CONFIG_PATH = path.join(__dirname, 'config.json')
 
@@ -51,6 +52,18 @@ const findPowerPointExecutable = () => {
   return null
 }
 
+const resolveOpenStrategy = (extension) => {
+  if (process.platform === 'win32' && PRESENTATION_EXTENSIONS.includes(extension) && findPowerPointExecutable()) {
+    return 'powerpoint'
+  }
+
+  if (process.platform === 'darwin' && extension === '.key') {
+    return 'keynote'
+  }
+
+  return 'shell'
+}
+
 const createWindow = () => {
   const win = new BrowserWindow({
     fullscreen: true,
@@ -82,15 +95,28 @@ ipcMain.handle('open-presentation', async (_event, { presentacion, fecha, disert
   }
 
   const extension = (presentacion.extension || '').toLowerCase()
-  if (PRESENTATION_EXTENSIONS.includes(extension)) {
+  const strategy = resolveOpenStrategy(extension)
+
+  if (strategy === 'powerpoint') {
     const powerPointExecutable = findPowerPointExecutable()
-    if (powerPointExecutable) {
-      execFile(powerPointExecutable, ['/S', localPath], (error) => {
-        if (error) {
-          console.error('Error al abrir PowerPoint en modo presentación:', error)
-        }
-      })
+    execFile(powerPointExecutable, ['/S', localPath], (error) => {
+      if (error) {
+        console.error('Error al abrir PowerPoint en modo presentación:', error)
+      }
+    })
+    return { success: true }
+  }
+
+  if (strategy === 'keynote') {
+    if (!findKeynoteApp()) {
+      return { success: false, error: 'No se pudo abrir la presentación en Keynote: Keynote no está instalado en este equipo.' }
+    }
+
+    try {
+      await openInKeynote(localPath)
       return { success: true }
+    } catch (err) {
+      return { success: false, error: `No se pudo abrir la presentación en Keynote: ${err.message}` }
     }
   }
 
