@@ -1,6 +1,6 @@
 # SPEC 10 — Empaquetado y firma de la app Electron para macOS
 
-> **Estado:** Draft
+> **Estado:** aprobado
 > **Depende de:** SPEC 09 (abrir-key-macos)
 > **Fecha:** 2026-08-01
 > **Objetivo:** Empaquetar Octopus como una app `.app` de macOS con identidad estable y firma (al menos ad-hoc), en vez de correrla vía `npm start`/`electron .` en modo desarrollo, para que macOS reconozca de forma consistente los permisos de Automatización y de acceso a archivos que SPEC 09 necesita para controlar Keynote — evitando el comportamiento errático detectado en pruebas donde un archivo `.key` nuevo era rechazado por Keynote (`osascript` -> "operación no permitida") hasta que era "destrabado" manualmente abriéndolo primero desde Terminal.
