@@ -1,6 +1,6 @@
 # SPEC 09 — Abrir archivos .key (Keynote) en modo presentación desde macOS
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 02 (boton-go-powerpoint), SPEC 05 (descarga-presentaciones)
 > **Fecha:** 2026-08-01
 > **Objetivo:** Al presionar "Go" en la pantalla Speaker con Octopus corriendo en macOS, cuando la presentación de la charla es un archivo `.key`, cerrar cualquier presentación de Keynote previamente abierta, abrir el nuevo archivo en Keynote e iniciar automáticamente el modo presentación (slideshow) vía AppleScript, replicando en Mac el mismo comportamiento de apertura directa en modo presentación que SPEC 02 ya implementa para PowerPoint en Windows.
@@ -49,15 +49,15 @@ Este spec no introduce ninguna estructura de datos nueva. `presentacion.extensio
 
 ## Acceptance criteria
 
-- [ ] Con Octopus corriendo en macOS y Keynote instalado, click en "Go" en Speaker sobre una charla cuya presentación tiene `extension === '.key'` abre Keynote directamente en modo presentación (slideshow), sin que el disertante tenga que iniciar el slideshow manualmente.
-- [ ] Si ya había un documento de Keynote abierto por un "Go" anterior, al presionar "Go" de nuevo esa presentación previa se cierra antes de que se abra y arranque la nueva.
-- [ ] Si Keynote no está instalado en el Mac (`/Applications/Keynote.app` no existe), click en "Go" sobre una charla `.key` muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
-- [ ] Si `osascript` falla por cualquier motivo (incluyendo permiso de Automatización denegado por el usuario), click en "Go" muestra el mensaje de error genérico en Speaker, sin romper la app.
-- [ ] El comando AppleScript recibe la ruta del archivo sin interpolarla directamente en el string del script (se pasa como argumento separado a `osascript`), evitando inyección de comandos si el nombre de archivo/ruta contuviera comillas u otros caracteres especiales.
-- [ ] En Windows, el comportamiento de apertura de `.ppt`/`.pptx` (SPEC 02) y el pipeline de descarga (SPEC 05) no cambian respecto a hoy.
-- [ ] En macOS, cualquier extensión que no sea `.key` (ej. `.pdf`, `.pptx` si llegara a darse) sigue abriéndose vía `shell.openPath` (fallback genérico), sin pasar por el mecanismo de Keynote.
-- [ ] El pipeline de descarga/resolución de ruta local de SPEC 05 (manifest, descarga on-demand, carpetas por fecha/disertante) funciona igual en macOS que en Windows, sin cambios de esta spec.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01-08 (navegación, botón Go, indicador de descargas, reset, splash) salvo los cambios explícitamente documentados en esta spec.
+- [x] Con Octopus corriendo en macOS y Keynote instalado, click en "Go" en Speaker sobre una charla cuya presentación tiene `extension === '.key'` abre Keynote directamente en modo presentación (slideshow), sin que el disertante tenga que iniciar el slideshow manualmente.
+- [x] Si ya había un documento de Keynote abierto por un "Go" anterior, al presionar "Go" de nuevo esa presentación previa se cierra antes de que se abra y arranque la nueva.
+- [x] Si Keynote no está instalado en el Mac (`/Applications/Keynote.app` no existe), click en "Go" sobre una charla `.key` muestra un mensaje de error visible en la pantalla Speaker, sin cerrar ni romper la app Octopus.
+- [x] Si `osascript` falla por cualquier motivo (incluyendo permiso de Automatización denegado por el usuario), click en "Go" muestra el mensaje de error genérico en Speaker, sin romper la app.
+- [x] El comando AppleScript recibe la ruta del archivo sin interpolarla directamente en el string del script (se pasa como argumento separado a `osascript`), evitando inyección de comandos si el nombre de archivo/ruta contuviera comillas u otros caracteres especiales.
+- [x] En Windows, el comportamiento de apertura de `.ppt`/`.pptx` (SPEC 02) y el pipeline de descarga (SPEC 05) no cambian respecto a hoy.
+- [x] En macOS, cualquier extensión que no sea `.key` (ej. `.pdf`, `.pptx` si llegara a darse) sigue abriéndose vía `shell.openPath` (fallback genérico), sin pasar por el mecanismo de Keynote.
+- [x] El pipeline de descarga/resolución de ruta local de SPEC 05 (manifest, descarga on-demand, carpetas por fecha/disertante) funciona igual en macOS que en Windows, sin cambios de esta spec.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01-08 (navegación, botón Go, indicador de descargas, reset, splash) salvo los cambios explícitamente documentados en esta spec.
 
 ## Decisions
 
