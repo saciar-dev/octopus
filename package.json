@@ -5,11 +5,25 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build:mac": "electron-builder --mac --dir",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "saciar dev",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^41.7.1"
+    "electron": "^41.7.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.octopus.speakerpreviewmanager",
+    "productName": "Octopus",
+    "mac": {
+      "target": "dir",
+      "identity": null,
+      "extendInfo": {
+        "NSAppleEventsUsageDescription": "Octopus necesita controlar Keynote mediante Eventos de Apple para abrir automáticamente el archivo .key de la charla seleccionada."
+      }
+    },
+    "afterSign": "scripts/afterSignAdHoc.js"
   }
 }
