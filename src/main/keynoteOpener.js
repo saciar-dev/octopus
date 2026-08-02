@@ -12,6 +12,9 @@ on run argv
   set thePath to item 1 of argv
   tell application "Keynote"
     if it is running then
+      try
+        stop
+      end try
       close every document
     end if
     activate
