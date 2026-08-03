@@ -1,6 +1,6 @@
 # SPEC 13 — Abrir `.key` vía LaunchServices en vez de AppleScript crudo (Opción B de SPEC 11)
 
-> **Estado:** Draft
+> **Estado:** aprobado
 > **Depende de:** SPEC 09 (abrir-key-macos), SPEC 11 (diagnostico-permiso-archivos-macos), SPEC 12 (remover-cuarentena-key-macos)
 > **Fecha:** 2026-08-02
 > **Objetivo:** Determinar si abrir el `.key` a través de LaunchServices (equivalente a `open -a Keynote <archivo>`) en vez de `osascript`/`open POSIX file` evita el error "operación no permitida" en el flujo real de descarga de Octopus, dado que SPEC 12 confirmó que la remoción de `com.apple.quarantine` (Opción A) no resuelve el bug para archivos descargados por el flujo real de la app.
@@ -36,15 +36,21 @@ A definir en el refinamiento — probablemente no introduce estructuras de datos
 
 ## Implementation plan
 
-*(A definir/refinar antes de aprobar este spec — este es un borrador inicial creado durante el cierre de SPEC 12.)*
+1. Reproducir el error con `713.key` y validar manualmente en Terminal si `open -a Keynote <path>` (LaunchServices) abre el archivo sin error. **✅ Completado 2026-08-03** — abrió sin error en el primer intento.
+2. Rediseñar `src/main/keynoteOpener.js` (Opción 1 — híbrido) para:
+   - Mantener el `stop`/`close every document` vía AppleScript como paso previo (limpieza de estado anterior de Keynote).
+   - Reemplazar `open POSIX file` por `open -a Keynote <path>` vía `execFile('open', ...)` (LaunchServices) para la apertura real del archivo.
+   - Tras la apertura, correr un AppleScript corto que haga `activate` y `start (document 1)` con un retry/poll (hasta 20 intentos de 0.25s) para esperar a que el documento termine de cargar antes de iniciar la presentación.
 
 ## Acceptance criteria
 
-*(A definir en el refinamiento.)*
+- [x] `open -a Keynote <path>` abre un `.key` descargado por el flujo real de Octopus sin el error "operación no permitida", en el primer intento.
+- [x] `src/main/keynoteOpener.js` usa LaunchServices (`open -a Keynote`) para la apertura del archivo, en vez de `osascript open POSIX file`.
+- [x] Al presionar "Go" se sigue: cerrando cualquier documento/presentación anterior de Keynote, trayendo Keynote al frente, e iniciando la presentación automáticamente — mismo comportamiento que antes del cambio.
 
 ## Decisions
 
-*(A completar durante la fase de refinamiento/ejecución de este spec.)*
+- **2026-08-03** — Prueba manual en Mac real: `open -a Keynote "/ruta/completa/a/713.key"` abrió el archivo **sin error** en el primer intento (el mismo `713.key` que fallaba con "operación no permitida" vía `osascript`/`open POSIX file`). Esto confirma la hipótesis de la Opción B: LaunchServices gestiona correctamente el chequeo de Gatekeeper/sandbox que el `open POSIX file` de AppleScript no gestiona. Se decide avanzar con el rediseño de `src/main/keynoteOpener.js` para usar LaunchServices en vez de AppleScript para la apertura inicial.
 
 ## Risks
 
