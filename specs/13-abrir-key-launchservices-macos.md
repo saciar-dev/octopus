@@ -1,6 +1,6 @@
 # SPEC 13 — Abrir `.key` vía LaunchServices en vez de AppleScript crudo (Opción B de SPEC 11)
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 09 (abrir-key-macos), SPEC 11 (diagnostico-permiso-archivos-macos), SPEC 12 (remover-cuarentena-key-macos)
 > **Fecha:** 2026-08-02
 > **Objetivo:** Determinar si abrir el `.key` a través de LaunchServices (equivalente a `open -a Keynote <archivo>`) en vez de `osascript`/`open POSIX file` evita el error "operación no permitida" en el flujo real de descarga de Octopus, dado que SPEC 12 confirmó que la remoción de `com.apple.quarantine` (Opción A) no resuelve el bug para archivos descargados por el flujo real de la app.
@@ -47,6 +47,8 @@ A definir en el refinamiento — probablemente no introduce estructuras de datos
 - [x] `open -a Keynote <path>` abre un `.key` descargado por el flujo real de Octopus sin el error "operación no permitida", en el primer intento.
 - [x] `src/main/keynoteOpener.js` usa LaunchServices (`open -a Keynote`) para la apertura del archivo, en vez de `osascript open POSIX file`.
 - [x] Al presionar "Go" se sigue: cerrando cualquier documento/presentación anterior de Keynote, trayendo Keynote al frente, e iniciando la presentación automáticamente — mismo comportamiento que antes del cambio.
+
+**Validación en Mac real (2026-08-03):** probado el flujo completo de Octopus (descarga real + "Go", con y sin Keynote abierto previamente) — abre sin error "operación no permitida" y auto-presenta correctamente en ambos casos. Todos los criterios de aceptación verificados.
 
 ## Decisions
 
