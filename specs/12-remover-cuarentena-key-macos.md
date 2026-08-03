@@ -1,6 +1,6 @@
 # SPEC 12 — Remover atributo de cuarentena de las presentaciones descargadas en macOS
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 05 (descarga-presentaciones), SPEC 09 (abrir-key-macos), SPEC 11 (diagnostico-permiso-archivos-macos)
 > **Fecha:** 2026-08-02
 > **Objetivo:** Que Octopus quite el atributo `com.apple.quarantine` de cada `.key` inmediatamente después de descargarlo (SPEC 05), en macOS, para que el primer intento de abrirlo vía AppleScript (SPEC 09) no falle con "operación no permitida" — implementando la Opción A de la recomendación de SPEC 11, que aisló ese atributo como causa raíz confirmada del error (no la firma/identidad del `.app`, no TCC de Automatización ni de "Archivos y carpetas").
@@ -42,11 +42,11 @@ Este spec no introduce estructuras de datos nuevas. No afecta `config.json` ni e
 
 ## Acceptance criteria
 
-- [ ] Queda documentado en Decisions si los archivos descargados por el flujo real de Octopus (sin intervención manual) traían `com.apple.quarantine` antes de este cambio.
-- [ ] En macOS, después de `downloadPresentacion`, el `.key` resultante no tiene el atributo `com.apple.quarantine` (verificado con `xattr -l` en una Mac real).
-- [ ] El primer intento de "Go" (SPEC 09) sobre una presentación recién descargada por el flujo real de Octopus abre Keynote sin "operación no permitida", sin necesitar abrirla antes manualmente desde Terminal/Finder.
-- [ ] Si el archivo no tiene `com.apple.quarantine` (por ejemplo, en descargas repetidas de un mismo archivo ya limpiado), la descarga no falla ni muestra error al usuario.
-- [ ] El flujo de descarga en Windows no se ve afectado por este cambio (mismo comportamiento que antes de este spec).
+- [x] Queda documentado en Decisions si los archivos descargados por el flujo real de Octopus (sin intervención manual) traían `com.apple.quarantine` antes de este cambio. — No traían (ver Paso 1).
+- [x] En macOS, después de `downloadPresentacion`, el `.key` resultante no tiene el atributo `com.apple.quarantine` (verificado con `xattr -l` en una Mac real). — Confirmado (nunca lo tuvo, y sigue sin tenerlo).
+- [ ] **No cumplido.** El primer intento de "Go" (SPEC 09) sobre una presentación recién descargada por el flujo real de Octopus abre Keynote sin "operación no permitida", sin necesitar abrirla antes manualmente desde Terminal/Finder. — El error persiste; la causa raíz de SPEC 11 (cuarentena) no aplica al flujo real de descarga de Octopus. Ver Paso 4 en Decisions y `specs/13-abrir-key-launchservices-macos.md`.
+- [x] Si el archivo no tiene `com.apple.quarantine` (por ejemplo, en descargas repetidas de un mismo archivo ya limpiado), la descarga no falla ni muestra error al usuario. — Confirmado: la descarga y apertura de la app funcionaron con normalidad pese a que `xattr -d` no tenía nada que remover.
+- [x] El flujo de descarga en Windows no se ve afectado por este cambio (mismo comportamiento que antes de este spec). — Verificado por inspección de código (guard `process.platform !== 'darwin'`).
 
 ## Decisions
 
@@ -63,6 +63,23 @@ xattr -l ~/Library/Application\ Support/Octopus/presentaciones/*/*/713.key
 Esto confirma el riesgo anticipado en la tabla de Risks: el flujo actual de descarga (`fetch` + `fsPromises.writeFile` desde el proceso principal de Electron) **no estampa `com.apple.quarantine`**, a diferencia del archivo de prueba de SPEC 11 (copiado manualmente con `cp` desde un `.key` que sí traía cuarentena de un uso previo de Keynote/Safari/Mail).
 
 **Decisión:** siguiendo lo indicado en el Scope ("como medida preventiva aunque el resultado sea ambiguo"), se implementa igual `stripQuarantine` en el paso 2 — es una operación best-effort que no rompe nada si el atributo no está presente, y cubre el caso en que sí aparezca en otros entornos/versiones de macOS. En el paso 4 (verificación end-to-end) se prueba explícitamente si el "Go" sobre este mismo `713.key` (sin cuarentena) reproduce o no el error "operación no permitida", para determinar si además hace falta reabrir la investigación de SPEC 11.
+
+### Paso 4 — Verificación end-to-end en Mac real
+
+Con el cambio de `stripQuarantine` implementado y empaquetado (`npm run build:mac`), se repitió la descarga de `713.key` desde cero (borrando la copia anterior) a través del flujo normal de la app:
+
+- `xattr -l` sobre el archivo resultante: **sin salida** (igual que antes del cambio — consistente, ya que nunca tuvo el atributo).
+- Primer clic en "Go" sobre ese archivo: **persiste el error "operación no permitida"**.
+
+**Conclusión: la remoción de `com.apple.quarantine` no resuelve el bug real observado en el flujo de Octopus.** Esto confirma el riesgo anticipado en la tabla de Risks ("si no aparece cuarentena en descargas reales, hay que re-abrir la investigación de SPEC 11"). La causa raíz identificada en SPEC 11 (cuarentena) se probó sobre un archivo copiado manualmente que sí tenía ese atributo por un uso previo de Keynote/Safari/Mail — no es representativo de un `.key` que Octopus descarga por HTTP y escribe con `fsPromises.writeFile`, que nunca llega a tener cuarentena en primer lugar. El mecanismo que bloquea la apertura en el flujo real de Octopus sigue sin identificarse.
+
+**Este spec no puede cerrarse con el criterio de aceptación #3 cumplido** tal como está planteado, porque el fix implementado no ataca la causa real del bug en el flujo real de descarga.
+
+Dado que la Opción B (LaunchServices en vez de `osascript open POSIX file`) queda explícitamente fuera de scope de este spec, no se investiga ni se prueba acá. Se deja anotada como spec siguiente: `specs/13-abrir-key-launchservices-macos.md` (borrador, estado Draft).
+
+### Paso 5 — Verificación en Windows
+
+`stripQuarantine` tiene un guard `process.platform !== 'darwin'` al inicio (ver `src/main/presentationDownloader.js`), por lo que en Windows la función retorna inmediatamente sin ejecutar `execFile('xattr', ...)`. Verificado por inspección de código (no se corrió una descarga end-to-end real en Windows por no haber conectividad de prueba a la API del congreso disponible en este entorno). El guard es suficiente para garantizar que no hay ningún intento de invocar `xattr` fuera de macOS.
 
 ## Risks
 
