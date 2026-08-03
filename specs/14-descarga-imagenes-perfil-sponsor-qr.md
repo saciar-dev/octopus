@@ -39,9 +39,11 @@
 
 ```
 userData/imagenes/profile/{imagen}                  // foto del disertante
-userData/imagenes/profile/{imagen}/qr/{qr}           // QR "seguime" (nota: {imagen} se usa como nombre de carpeta, no de archivo, en este path)
+userData/imagenes/qr/{qr}                            // QR "seguime" (carpeta plana, no anidada bajo profile/{imagen})
 userData/imagenes/sponsor/{imagenSponsor}            // logo del sponsor
 ```
+
+> **Corrección durante implementación (Paso 3):** la redacción original de esta spec proponía `userData/imagenes/profile/{imagen}/qr/{qr}` para el QR, usando `{imagen}` como nombre de carpeta. Eso genera un conflicto real de filesystem: `profile/{imagen}` ya existe como **archivo** (la foto), por lo que no puede además ser **carpeta** (contenedora de `qr/{qr}`) cuando el mismo disertante tiene foto y QR — el caso normal de uso. Se corrigió a una carpeta plana `userData/imagenes/qr/{qr}`, análoga a `sponsor/`. La URL de descarga contra la API **no cambia** (sigue siendo `{apiBaseUrl}/img/{codigoEvento}/profile/{imagen}/qr/{qr}`), solo cambia dónde se guarda el archivo localmente. Decisión del usuario.
 
 Convenciones:
 
@@ -59,7 +61,7 @@ let imageDownloadQueue = [] // array de { tipo: 'profile' | 'qr' | 'sponsor', im
 
 ```js
 // octopus-img://profile/{imagen}              → userData/imagenes/profile/{imagen}
-// octopus-img://profile/{imagen}/qr/{qr}       → userData/imagenes/profile/{imagen}/qr/{qr}
+// octopus-img://profile/{imagen}/qr/{qr}       → userData/imagenes/qr/{qr}  (ruta local corregida, ver nota en Data model)
 // octopus-img://sponsor/{imagenSponsor}        → userData/imagenes/sponsor/{imagenSponsor}
 ```
 
@@ -78,7 +80,7 @@ No agrega campos a `config.json` — usa `apiBaseUrl` y `codigoEvento` ya existe
 ## Acceptance criteria
 
 - [ ] Al arrancar `npm start` con la API accesible, tras el fetch inicial se descargan en background y de forma secuencial la foto, el logo de sponsor y el QR de todas las charlas cuyos archivos no existan ya en `userData/imagenes/`.
-- [ ] Los archivos descargados quedan en `userData/imagenes/profile/{imagen}`, `userData/imagenes/profile/{imagen}/qr/{qr}` y `userData/imagenes/sponsor/{imagenSponsor}`, espejando la estructura de la URL de origen.
+- [ ] Los archivos descargados quedan en `userData/imagenes/profile/{imagen}`, `userData/imagenes/qr/{qr}` y `userData/imagenes/sponsor/{imagenSponsor}`.
 - [ ] Si un archivo ya existe localmente (mismo nombre), no se vuelve a descargar en un nuevo escaneo.
 - [ ] Cada refresh periódico (1 min), el botón "reset" y el guardado de configuración disparan un nuevo escaneo de imágenes pendientes, igual que con las presentaciones (SPEC 05).
 - [ ] Si falla la descarga de una imagen durante el escaneo, el resto de la cola continúa sin interrupción, y esa imagen queda pendiente para el próximo escaneo.
@@ -96,7 +98,7 @@ No agrega campos a `config.json` — usa `apiBaseUrl` y `codigoEvento` ya existe
 - **No:** logo del congreso (`congress.logo`). Excluido explícitamente por el usuario; queda para una spec futura si hace falta.
 - **Sí:** URLs de descarga confirmadas por el usuario: `{apiBaseUrl}/img/{codigoEvento}/profile/{imagen}` (foto), `{apiBaseUrl}/img/{codigoEvento}/profile/{imagen}/qr/{qr}` (QR, anidado bajo el nombre de la foto) y `{apiBaseUrl}/img/{codigoEvento}/sponsor/{imagenSponsor}` (sponsor). Usan `apiBaseUrl`, no `ftpBaseUrl` (SPEC 05) — no se agrega ningún campo nuevo a `config.json`.
 - **Sí:** sin manifest de versionado — la detección de "hay que descargar" es solo `fs.existsSync()` por nombre de archivo, no comparación de `actualizado` como en SPEC 05. A diferencia de `presentacion`, los campos `imagen`/`imagenSponsor`/`qr` de la API no traen timestamp (ver SPEC 03), así que no hay forma de detectar un reemplazo con el mismo nombre; se acepta ese riesgo por simplicidad, priorizando lo más simple sobre la posible detección de cambios sin timestamp real (decisión explícita del usuario).
-- **Sí:** almacenamiento local en carpetas planas por tipo (`userData/imagenes/profile/`, `userData/imagenes/profile/{imagen}/qr/`, `userData/imagenes/sponsor/`), espejando la URL de origen, en vez de duplicar por `{fecha}/{disertante}` como SPEC 05. Foto/sponsor/QR son atributos del disertante/sponsor que se repiten entre charlas — un mismo archivo se descarga una sola vez sin importar en cuántas charlas aparezca.
+- **Sí:** almacenamiento local en carpetas planas por tipo (`userData/imagenes/profile/`, `userData/imagenes/qr/`, `userData/imagenes/sponsor/`), en vez de duplicar por `{fecha}/{disertante}` como SPEC 05. Foto/sponsor/QR son atributos del disertante/sponsor que se repiten entre charlas — un mismo archivo se descarga una sola vez sin importar en cuántas charlas aparezca. La ruta del QR se corrigió a carpeta plana durante la implementación (ver nota en Data model) porque anidarla bajo `profile/{imagen}/` colisiona con el archivo de la foto.
 - **Sí:** mismo mecanismo de precarga en background que SPEC 05 (fetch inicial, refresh de 1 min, reset, guardado de config), reutilizando el patrón de cola secuencial ya existente, en vez de inventar un disparador nuevo.
 - **No:** descarga on-demand desde Speaker si la imagen no llegó todavía. Se prioriza la simplicidad: sin estado de carga en Speaker, sin lógica de descarga en el flujo de navegación — la precarga en background ya cubre el caso normal, y el placeholder actual cubre el caso de falta temporal.
 - **Sí:** protocolo custom (`octopus-img://`) registrado en `main.js` para servir las imágenes al renderer, en vez de `file://` + ajuste de CSP a `file:`. Decisión explícita del usuario: acota la exposición al filesystem local solo a la carpeta de imágenes de la app, en vez de habilitar acceso genérico a `file://` en el CSP.
@@ -107,6 +109,6 @@ No agrega campos a `config.json` — usa `apiBaseUrl` y `codigoEvento` ya existe
 | Riesgo | Mitigación |
 | --- | --- |
 | Sin manifest de versión, si el servidor reemplaza una foto/logo/QR manteniendo el mismo nombre de archivo, el kiosco sigue mostrando la versión vieja indefinidamente (el chequeo es solo `fs.existsSync()`) | Aceptado explícitamente por el usuario por simplicidad. Si se vuelve un problema real, una spec futura podría agregar un manifest de versión análogo al de SPEC 05 (requeriría que la API empiece a exponer un timestamp para estos campos). |
-| El path del QR depende del nombre de la foto (`profile/{imagen}/qr/{qr}`) — si `imagen` cambia entre requests o tiene caracteres problemáticos para el filesystem (ya que no se sanea, ver Data model), la carpeta del QR podría fallar al crearse | Se asume que la API entrega nombres válidos para filesystem (mismo supuesto que SPEC 03/05 para estos campos); si aparece un caso real con caracteres inválidos, revisar si hace falta sanear como se hace con `disertante` en SPEC 05. |
+| La URL de descarga del QR depende del nombre de la foto (`profile/{imagen}/qr/{qr}`) — si `imagen` tiene caracteres problemáticos para el filesystem (ya que no se sanea, ver Data model), la ruta local `qr/{qr}` podría fallar al crearse | Se asume que la API entrega nombres válidos para filesystem (mismo supuesto que SPEC 03/05 para estos campos); si aparece un caso real con caracteres inválidos, revisar si hace falta sanear como se hace con `disertante` en SPEC 05. |
 | El protocolo custom `octopus-img://` mal configurado (path traversal, ej. `imagen` con `../`) podría exponer archivos fuera de `userData/imagenes/` | El handler del protocolo debe normalizar y validar que la ruta resuelta quede dentro de `userData/imagenes/` antes de servir el archivo, rechazando cualquier resolución que escape de esa carpeta. |
 | Igual que en SPEC 05, la precarga secuencial de imágenes compite por el mismo ancho de banda que la cola de presentaciones, pudiendo demorar ambas colas si hay muchos archivos nuevos en el primer arranque | Aceptado, mismo riesgo ya documentado en SPEC 05; no hay UI de progreso ni priorización entre colas en esta spec. |
