@@ -2,7 +2,11 @@ const fs = require('node:fs')
 const fsPromises = require('node:fs/promises')
 const path = require('node:path')
 const EventEmitter = require('node:events')
+const { execFile } = require('node:child_process')
+const { promisify } = require('node:util')
 const { app } = require('electron/main')
+
+const execFileAsync = promisify(execFile)
 
 const downloadEvents = new EventEmitter()
 const emitProgress = (payload) => downloadEvents.emit('progress', payload)
@@ -43,6 +47,18 @@ const isDownloaded = (presentacion, context) => {
   return fs.existsSync(buildLocalPath(presentacion, context))
 }
 
+const stripQuarantine = async (localPath) => {
+  if (process.platform !== 'darwin') return
+  try {
+    await execFileAsync('xattr', ['-d', 'com.apple.quarantine', localPath])
+  } catch (err) {
+    const message = err.stderr || err.message || ''
+    if (!message.includes('No such xattr')) {
+      console.error(`No se pudo remover com.apple.quarantine de ${localPath}:`, message.trim() || err)
+    }
+  }
+}
+
 const downloadPresentacion = async (presentacion, config, context) => {
   const url = buildDownloadUrl(presentacion, config)
   const response = await fetch(url, { cache: 'no-store' })
@@ -54,6 +70,7 @@ const downloadPresentacion = async (presentacion, config, context) => {
   const localPath = buildLocalPath(presentacion, context)
   await fsPromises.mkdir(path.dirname(localPath), { recursive: true })
   await fsPromises.writeFile(localPath, buffer)
+  await stripQuarantine(localPath)
 
   const manifest = readManifest()
   manifest[buildManifestKey(context)] = presentacion.actualizado
