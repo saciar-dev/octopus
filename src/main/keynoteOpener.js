@@ -7,26 +7,34 @@ const findKeynoteApp = () => {
   return fs.existsSync(KEYNOTE_APP_PATH) ? KEYNOTE_APP_PATH : null
 }
 
-const OPEN_AND_PRESENT_SCRIPT = `
-on run argv
-  set thePath to item 1 of argv
-  tell application "Keynote"
-    if it is running then
-      try
-        stop
-      end try
-      close every document
-    end if
-    activate
-    set theDoc to open POSIX file thePath
-    start theDoc
-  end tell
-end run
+const STOP_AND_CLOSE_SCRIPT = `
+tell application "Keynote"
+  if it is running then
+    try
+      stop
+    end try
+    close every document
+  end if
+end tell
 `
 
-const openInKeynote = (localPath) => {
+const ACTIVATE_AND_PRESENT_SCRIPT = `
+tell application "Keynote"
+  activate
+  repeat 20 times
+    if (count of documents) > 0 then
+      start (document 1)
+      return
+    end if
+    delay 0.25
+  end repeat
+end tell
+error "No se pudo iniciar la presentacion: el documento no cargo a tiempo."
+`
+
+const runOsascript = (script) => {
   return new Promise((resolve, reject) => {
-    execFile('osascript', ['-e', OPEN_AND_PRESENT_SCRIPT, localPath], (error, stdout, stderr) => {
+    execFile('osascript', ['-e', script], (error, stdout, stderr) => {
       if (error) {
         reject(new Error(stderr ? stderr.trim() : error.message))
         return
@@ -34,6 +42,24 @@ const openInKeynote = (localPath) => {
       resolve()
     })
   })
+}
+
+const openWithLaunchServices = (localPath) => {
+  return new Promise((resolve, reject) => {
+    execFile('open', ['-a', 'Keynote', localPath], (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(stderr ? stderr.trim() : error.message))
+        return
+      }
+      resolve()
+    })
+  })
+}
+
+const openInKeynote = async (localPath) => {
+  await runOsascript(STOP_AND_CLOSE_SCRIPT)
+  await openWithLaunchServices(localPath)
+  await runOsascript(ACTIVATE_AND_PRESENT_SCRIPT)
 }
 
 module.exports = { findKeynoteApp, openInKeynote }
