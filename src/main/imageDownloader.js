@@ -35,9 +35,12 @@ const downloadImage = async (item, config) => {
   return localPath
 }
 
+const isImageDownloaded = (item) => fs.existsSync(buildLocalPath(item))
+
 module.exports = {
   getImagenesDir,
   buildDownloadUrl,
   buildLocalPath,
   downloadImage,
+  isImageDownloaded,
 }
