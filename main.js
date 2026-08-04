@@ -50,7 +50,7 @@ const registerImageProtocol = () => {
     }
 
     const imagenesDir = path.resolve(getImagenesDir())
-    const resolvedPath = path.resolve(buildLocalPath(item))
+    const resolvedPath = path.resolve(buildLocalPath(item, config))
     if (resolvedPath !== imagenesDir && !resolvedPath.startsWith(imagenesDir + path.sep)) {
       return new Response('Forbidden', { status: 403 })
     }
@@ -129,8 +129,8 @@ const createWindow = () => {
 ipcMain.handle('open-presentation', async (_event, { presentacion, fecha, disertante, charlaId }) => {
   const context = { fecha, disertante, charlaId }
   let localPath
-  if (isDownloaded(presentacion, context)) {
-    localPath = resolveLocalPath(presentacion, context)
+  if (isDownloaded(presentacion, config, context)) {
+    localPath = resolveLocalPath(presentacion, config, context)
   } else {
     try {
       localPath = await downloadOnDemand(presentacion, config, context)
