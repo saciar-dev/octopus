@@ -21,8 +21,14 @@ const buildDownloadUrl = (presentacion, config) =>
 
 const sanitizeForPath = (value) => value.replace(INVALID_PATH_CHARS, '_').trim()
 
-const buildLocalPath = (presentacion, context) =>
-  path.join(getPresentacionesDir(), context.fecha, sanitizeForPath(context.disertante), presentacion.nombreArchivo)
+const buildLocalPath = (presentacion, config, context) =>
+  path.join(
+    getPresentacionesDir(),
+    sanitizeForPath(config.codigoEvento),
+    context.fecha,
+    sanitizeForPath(context.disertante),
+    presentacion.nombreArchivo
+  )
 
 const buildManifestKey = (context) => `${context.fecha}_${context.charlaId}`
 
@@ -38,13 +44,13 @@ const writeManifest = (manifest) => {
   fs.writeFileSync(getManifestPath(), JSON.stringify(manifest, null, 2))
 }
 
-const isDownloaded = (presentacion, context) => {
+const isDownloaded = (presentacion, config, context) => {
   const manifest = readManifest()
   const entry = manifest[buildManifestKey(context)]
   if (entry === undefined || entry !== presentacion.actualizado) {
     return false
   }
-  return fs.existsSync(buildLocalPath(presentacion, context))
+  return fs.existsSync(buildLocalPath(presentacion, config, context))
 }
 
 const stripQuarantine = async (localPath) => {
@@ -67,7 +73,7 @@ const downloadPresentacion = async (presentacion, config, context) => {
   }
   const buffer = Buffer.from(await response.arrayBuffer())
 
-  const localPath = buildLocalPath(presentacion, context)
+  const localPath = buildLocalPath(presentacion, config, context)
   await fsPromises.mkdir(path.dirname(localPath), { recursive: true })
   await fsPromises.writeFile(localPath, buffer)
   await stripQuarantine(localPath)
@@ -79,7 +85,7 @@ const downloadPresentacion = async (presentacion, config, context) => {
   return localPath
 }
 
-const resolveLocalPath = (presentacion, context) => buildLocalPath(presentacion, context)
+const resolveLocalPath = (presentacion, config, context) => buildLocalPath(presentacion, config, context)
 
 const FAILED_MESSAGE_DURATION_MS = 6000
 
@@ -159,7 +165,7 @@ const enqueueDownloads = (sessionsByDate, config) => {
     (item) =>
       !queuedKeys.has(buildManifestKey(item.context)) &&
       !inFlightDownloads.has(buildManifestKey(item.context)) &&
-      !isDownloaded(item.presentacion, item.context)
+      !isDownloaded(item.presentacion, config, item.context)
   )
   downloadQueue.push(...pending)
   if (queueRunning && currentProgress && pending.length > 0) {

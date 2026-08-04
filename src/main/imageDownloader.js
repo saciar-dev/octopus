@@ -13,10 +13,11 @@ const buildDownloadUrl = ({ tipo, imagen, qr }, config) => {
   throw new Error(`Tipo de imagen desconocido: ${tipo}`)
 }
 
-const buildLocalPath = ({ tipo, imagen, qr }) => {
-  if (tipo === 'profile') return path.join(getImagenesDir(), 'profile', imagen)
-  if (tipo === 'qr') return path.join(getImagenesDir(), 'qr', qr)
-  if (tipo === 'sponsor') return path.join(getImagenesDir(), 'sponsor', imagen)
+const buildLocalPath = ({ tipo, imagen, qr }, config) => {
+  const eventDir = path.join(getImagenesDir(), config.codigoEvento)
+  if (tipo === 'profile') return path.join(eventDir, 'profile', imagen)
+  if (tipo === 'qr') return path.join(eventDir, 'qr', qr)
+  if (tipo === 'sponsor') return path.join(eventDir, 'sponsor', imagen)
   throw new Error(`Tipo de imagen desconocido: ${tipo}`)
 }
 
@@ -28,14 +29,14 @@ const downloadImage = async (item, config) => {
   }
   const buffer = Buffer.from(await response.arrayBuffer())
 
-  const localPath = buildLocalPath(item)
+  const localPath = buildLocalPath(item, config)
   await fsPromises.mkdir(path.dirname(localPath), { recursive: true })
   await fsPromises.writeFile(localPath, buffer)
 
   return localPath
 }
 
-const isImageDownloaded = (item) => fs.existsSync(buildLocalPath(item))
+const isImageDownloaded = (item, config) => fs.existsSync(buildLocalPath(item, config))
 
 const buildItemKey = ({ tipo, imagen, qr }) => (tipo === 'qr' ? `qr:${qr}` : `${tipo}:${imagen}`)
 
@@ -82,7 +83,7 @@ const processImageQueue = async (config) => {
 const enqueueImageDownloads = (sessionsByDate, config) => {
   const queuedKeys = new Set(imageDownloadQueue.map(buildItemKey))
   const pending = collectImageItems(sessionsByDate).filter(
-    (item) => !queuedKeys.has(buildItemKey(item)) && !isImageDownloaded(item)
+    (item) => !queuedKeys.has(buildItemKey(item)) && !isImageDownloaded(item, config)
   )
   imageDownloadQueue.push(...pending)
   processImageQueue(config)
