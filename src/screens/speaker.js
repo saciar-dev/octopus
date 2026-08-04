@@ -38,9 +38,23 @@
     const body = document.createElement('div')
     body.className = 'speaker-body'
 
-    const photo = document.createElement('div')
-    photo.className = 'speaker-photo'
-    photo.textContent = initials(speaker.name)
+    function renderPhotoPlaceholder() {
+      const placeholder = document.createElement('div')
+      placeholder.className = 'speaker-photo'
+      placeholder.textContent = initials(speaker.name)
+      return placeholder
+    }
+
+    let photo
+    if (speaker.photo !== null) {
+      photo = document.createElement('img')
+      photo.className = 'speaker-photo'
+      photo.alt = speaker.name
+      photo.src = `octopus-img://profile/${encodeURIComponent(speaker.photo)}`
+      photo.onerror = () => photo.replaceWith(renderPhotoPlaceholder())
+    } else {
+      photo = renderPhotoPlaceholder()
+    }
 
     const main = document.createElement('div')
     main.className = 'speaker-main'
@@ -69,26 +83,51 @@
     main.appendChild(social)
     main.appendChild(bio)
 
-    // sponsor.logo y followMeQr todavía no tienen assets finales;
-    // se representan con placeholders visuales (badge/checkerboard),
-    // igual que en el ui-kit de referencia.
     const side = document.createElement('div')
     side.className = 'speaker-side'
 
     if (speaker.sponsor) {
       const sponsorBadge = document.createElement('div')
       sponsorBadge.className = 'speaker-sponsor-badge'
-      sponsorBadge.textContent = speaker.sponsor.name
+
+      if (speaker.sponsor.logo !== null) {
+        const sponsorLogo = document.createElement('img')
+        sponsorLogo.className = 'speaker-sponsor-logo'
+        sponsorLogo.alt = speaker.sponsor.name
+        sponsorLogo.src = `octopus-img://sponsor/${encodeURIComponent(speaker.sponsor.logo)}`
+        sponsorLogo.onerror = () => sponsorLogo.remove()
+        sponsorBadge.appendChild(sponsorLogo)
+      }
+
+      const sponsorName = document.createElement('span')
+      sponsorName.textContent = speaker.sponsor.name
+      sponsorBadge.appendChild(sponsorName)
+
       side.appendChild(sponsorBadge)
     }
 
     if (speaker.followMeQr) {
       const followMe = document.createElement('div')
       followMe.className = 'speaker-followme'
-      followMe.innerHTML = `
-        <div class="speaker-followme-label">FOLLOW ME</div>
-        <div class="speaker-followme-qr"></div>
-      `
+
+      const followMeLabel = document.createElement('div')
+      followMeLabel.className = 'speaker-followme-label'
+      followMeLabel.textContent = 'FOLLOW ME'
+      followMe.appendChild(followMeLabel)
+
+      function renderQrPlaceholder() {
+        const placeholder = document.createElement('div')
+        placeholder.className = 'speaker-followme-qr'
+        return placeholder
+      }
+
+      const qrImg = document.createElement('img')
+      qrImg.className = 'speaker-followme-qr'
+      qrImg.alt = 'QR seguime'
+      qrImg.src = `octopus-img://qr/${encodeURIComponent(speaker.followMeQr)}`
+      qrImg.onerror = () => qrImg.replaceWith(renderQrPlaceholder())
+      followMe.appendChild(qrImg)
+
       side.appendChild(followMe)
     }
 

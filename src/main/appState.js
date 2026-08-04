@@ -1,6 +1,7 @@
 const { fetchCongress, fetchSalas, fetchCharlas } = require('./apiClient')
 const { normalizeState, normalizeCharlas } = require('./normalize')
 const { enqueueDownloads } = require('./presentationDownloader')
+const { enqueueImageDownloads } = require('./imageDownloader')
 
 const INITIAL_RETRY_DELAY_MS = 5000
 const REFRESH_INTERVAL_MS = 60 * 1000
@@ -70,6 +71,7 @@ const runFetchAttempt = async (effectiveConfig, generation) => {
       settings: state.settings,
     })
     enqueueDownloads(data.sessionsByDate, effectiveConfig)
+    enqueueImageDownloads(data.sessionsByDate, effectiveConfig)
   } catch (err) {
     if (generation !== fetchGeneration) return
     console.error(`Fetch inicial falló, reintentando en ${INITIAL_RETRY_DELAY_MS}ms:`, err.message)
@@ -90,6 +92,7 @@ const refreshCharlas = async (config) => {
       setState({ ...state, data: { ...state.data, dates, sessionsByDate } })
     }
     enqueueDownloads(sessionsByDate, config)
+    enqueueImageDownloads(sessionsByDate, config)
     console.log('Refresh de charlas OK:', new Date().toISOString())
   } catch (err) {
     console.error('Refresh de charlas falló, se mantienen los datos previos:', err.message)

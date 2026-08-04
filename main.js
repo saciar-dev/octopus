@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain, shell, screen } = require('electron/main')
+const { app, BrowserWindow, ipcMain, shell, screen, protocol, net } = require('electron/main')
 const path = require('node:path')
 const fs = require('node:fs')
+const { pathToFileURL } = require('node:url')
 const { execFile } = require('node:child_process')
 const { fetchSalas } = require('./src/main/apiClient')
 const {
@@ -13,9 +14,53 @@ const {
   setSettings,
 } = require('./src/main/appState')
 const { isDownloaded, resolveLocalPath, downloadOnDemand, downloadEvents } = require('./src/main/presentationDownloader')
+const { getImagenesDir, buildLocalPath } = require('./src/main/imageDownloader')
 const { findKeynoteApp, openInKeynote } = require('./src/main/keynoteOpener')
 
 const CONFIG_PATH = path.join(__dirname, 'config.json')
+
+const IMG_PROTOCOL = 'octopus-img'
+
+protocol.registerSchemesAsPrivileged([
+  { scheme: IMG_PROTOCOL, privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } },
+])
+
+const parseImageRequestUrl = (url) => {
+  const parsed = new URL(url)
+  const tipo = parsed.hostname
+  const segments = parsed.pathname.split('/').filter(Boolean).map(decodeURIComponent)
+
+  if (tipo === 'profile' && segments.length === 1) {
+    return { tipo: 'profile', imagen: segments[0] }
+  }
+  if (tipo === 'qr' && segments.length === 1) {
+    return { tipo: 'qr', qr: segments[0] }
+  }
+  if (tipo === 'sponsor' && segments.length === 1) {
+    return { tipo: 'sponsor', imagen: segments[0] }
+  }
+  return null
+}
+
+const registerImageProtocol = () => {
+  protocol.handle(IMG_PROTOCOL, (request) => {
+    const item = parseImageRequestUrl(request.url)
+    if (!item) {
+      return new Response('Not found', { status: 404 })
+    }
+
+    const imagenesDir = path.resolve(getImagenesDir())
+    const resolvedPath = path.resolve(buildLocalPath(item))
+    if (resolvedPath !== imagenesDir && !resolvedPath.startsWith(imagenesDir + path.sep)) {
+      return new Response('Forbidden', { status: 403 })
+    }
+    if (!fs.existsSync(resolvedPath)) {
+      return new Response('Not found', { status: 404 })
+    }
+
+    return net.fetch(pathToFileURL(resolvedPath).toString())
+  })
+}
 
 let config = applyConfigDefaults(require('./config.json'))
 
@@ -166,6 +211,7 @@ downloadEvents.on('progress', (payload) => {
 })
 
 app.whenReady().then(() => {
+  registerImageProtocol()
   createWindow()
   fetchInitialData(config)
   startPeriodicRefresh(() => config)
