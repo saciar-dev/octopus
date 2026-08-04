@@ -33,8 +33,8 @@ const parseImageRequestUrl = (url) => {
   if (tipo === 'profile' && segments.length === 1) {
     return { tipo: 'profile', imagen: segments[0] }
   }
-  if (tipo === 'profile' && segments.length === 3 && segments[1] === 'qr') {
-    return { tipo: 'qr', imagen: segments[0], qr: segments[2] }
+  if (tipo === 'qr' && segments.length === 1) {
+    return { tipo: 'qr', qr: segments[0] }
   }
   if (tipo === 'sponsor' && segments.length === 1) {
     return { tipo: 'sponsor', imagen: segments[0] }

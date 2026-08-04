@@ -8,7 +8,7 @@ const getImagenesDir = () => path.join(app.getPath('userData'), 'imagenes')
 const buildDownloadUrl = ({ tipo, imagen, qr }, config) => {
   const base = `${config.apiBaseUrl.replace(/\/$/, '')}/img/${config.codigoEvento}`
   if (tipo === 'profile') return `${base}/profile/${imagen}`
-  if (tipo === 'qr') return `${base}/profile/${imagen}/qr/${qr}`
+  if (tipo === 'qr') return `${base}/qr/${qr}`
   if (tipo === 'sponsor') return `${base}/sponsor/${imagen}`
   throw new Error(`Tipo de imagen desconocido: ${tipo}`)
 }
@@ -37,7 +37,7 @@ const downloadImage = async (item, config) => {
 
 const isImageDownloaded = (item) => fs.existsSync(buildLocalPath(item))
 
-const buildItemKey = ({ tipo, imagen, qr }) => `${tipo}:${imagen}:${qr ?? ''}`
+const buildItemKey = ({ tipo, imagen, qr }) => (tipo === 'qr' ? `qr:${qr}` : `${tipo}:${imagen}`)
 
 const collectImageItems = (sessionsByDate) => {
   const items = new Map()
@@ -49,9 +49,9 @@ const collectImageItems = (sessionsByDate) => {
         const { photo, sponsor, followMeQr } = charla.speaker
         if (photo !== null) {
           add({ tipo: 'profile', imagen: photo })
-          if (followMeQr !== null) {
-            add({ tipo: 'qr', imagen: photo, qr: followMeQr })
-          }
+        }
+        if (followMeQr !== null) {
+          add({ tipo: 'qr', qr: followMeQr })
         }
         if (sponsor !== null && sponsor.logo !== null) {
           add({ tipo: 'sponsor', imagen: sponsor.logo })
