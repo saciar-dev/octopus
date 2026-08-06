@@ -222,6 +222,7 @@ downloadEvents.on('progress', (payload) => {
 })
 
 app.whenReady().then(() => {
+  config = loadOrInitConfig()
   registerImageProtocol()
   createWindow()
   fetchInitialData(config)
