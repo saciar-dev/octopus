@@ -17,7 +17,8 @@ const { isDownloaded, resolveLocalPath, downloadOnDemand, downloadEvents } = req
 const { getImagenesDir, buildLocalPath } = require('./src/main/imageDownloader')
 const { findKeynoteApp, openInKeynote } = require('./src/main/keynoteOpener')
 
-const CONFIG_PATH = path.join(__dirname, 'config.json')
+const CONFIG_TEMPLATE_PATH = path.join(__dirname, 'config.json')
+const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json')
 
 const IMG_PROTOCOL = 'octopus-img'
 
