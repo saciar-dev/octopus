@@ -63,7 +63,17 @@ const registerImageProtocol = () => {
   })
 }
 
-let config = applyConfigDefaults(require('./config.json'))
+const loadOrInitConfig = () => {
+  if (!fs.existsSync(CONFIG_PATH)) {
+    fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true })
+    fs.copyFileSync(CONFIG_TEMPLATE_PATH, CONFIG_PATH)
+  }
+
+  const rawConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
+  return applyConfigDefaults(rawConfig)
+}
+
+let config
 
 let mainWindow
 
