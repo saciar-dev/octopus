@@ -5,6 +5,7 @@ window.OctopusApp = (function () {
   const downloadListeners = []
   let current = null
   let lastDownloadPayload = { status: 'idle' }
+  let activeScreenNode = null
   const SCREEN_TRANSITION_MS = 200 // matches --dur-normal en src/styles/app.css
 
   const DOWNLOAD_SPINNER_ICON = `<svg class="footer-progress-icon footer-progress-icon--spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 1-9 9" /></svg>`
@@ -38,8 +39,10 @@ window.OctopusApp = (function () {
     }
     window.OctopusKeyboard.setFocusGroup([])
 
-    const outgoing = root.firstElementChild
+    const outgoing = activeScreenNode
     const incoming = renderFn(current.params)
+    activeScreenNode = incoming
+
     incoming.classList.add('screen-enter')
     root.appendChild(incoming)
     if (outgoing) outgoing.classList.add('screen-exit')
@@ -49,6 +52,10 @@ window.OctopusApp = (function () {
       if (outgoing) outgoing.classList.add('screen-exit-active')
     })
 
+    // outgoing/incoming quedan fijados por closure: aunque una navegación
+    // nueva interrumpa esta transición antes de que termine, este cleanup
+    // solo va a tocar su propio nodo saliente, nunca el de una transición
+    // más nueva (activeScreenNode ya apunta a otro nodo en ese caso).
     setTimeout(() => {
       incoming.classList.remove('screen-enter', 'screen-enter-active')
       if (outgoing && outgoing.parentNode === root) root.removeChild(outgoing)
