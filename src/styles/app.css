@@ -34,6 +34,36 @@ body {
   background: var(--color-bg-page);
 }
 
+/*
+  Fade cruzado entre pantallas (SPEC 17): mientras dura la transición,
+  la pantalla saliente y la entrante se posicionan una sobre otra
+  (en vez del flujo normal en bloque) para poder solaparse.
+*/
+.screen-enter,
+.screen-exit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.screen-enter {
+  opacity: 0;
+  transition: opacity var(--dur-normal) var(--ease-standard);
+}
+
+.screen-enter-active {
+  opacity: 1;
+}
+
+.screen-exit {
+  opacity: 1;
+  transition: opacity var(--dur-normal) var(--ease-standard);
+}
+
+.screen-exit-active {
+  opacity: 0;
+}
+
 .screen-footer {
   height: 10px;
   flex-shrink: 0;
