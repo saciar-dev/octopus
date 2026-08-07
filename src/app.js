@@ -5,6 +5,7 @@ window.OctopusApp = (function () {
   const downloadListeners = []
   let current = null
   let lastDownloadPayload = { status: 'idle' }
+  const SCREEN_TRANSITION_MS = 200 // matches --dur-normal en src/styles/app.css
 
   const DOWNLOAD_SPINNER_ICON = `<svg class="footer-progress-icon footer-progress-icon--spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 1-9 9" /></svg>`
   const DOWNLOAD_WARNING_ICON = `<svg class="footer-progress-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.29 3.86l-8.18 14.18A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.79-2.96L13.71 3.86a2 2 0 0 0-3.42 0z" /></svg>`
@@ -36,8 +37,23 @@ window.OctopusApp = (function () {
       return
     }
     window.OctopusKeyboard.setFocusGroup([])
-    root.innerHTML = ''
-    root.appendChild(renderFn(current.params))
+
+    const outgoing = root.firstElementChild
+    const incoming = renderFn(current.params)
+    incoming.classList.add('screen-enter')
+    root.appendChild(incoming)
+    if (outgoing) outgoing.classList.add('screen-exit')
+
+    requestAnimationFrame(() => {
+      incoming.classList.add('screen-enter-active')
+      if (outgoing) outgoing.classList.add('screen-exit-active')
+    })
+
+    setTimeout(() => {
+      incoming.classList.remove('screen-enter', 'screen-enter-active')
+      if (outgoing && outgoing.parentNode === root) root.removeChild(outgoing)
+    }, SCREEN_TRANSITION_MS)
+
     updateDownloadFooters()
   }
 
