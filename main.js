@@ -17,7 +17,8 @@ const { isDownloaded, resolveLocalPath, downloadOnDemand, downloadEvents } = req
 const { getImagenesDir, buildLocalPath } = require('./src/main/imageDownloader')
 const { findKeynoteApp, openInKeynote } = require('./src/main/keynoteOpener')
 
-const CONFIG_PATH = path.join(__dirname, 'config.json')
+const CONFIG_TEMPLATE_PATH = path.join(__dirname, 'config.json')
+const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json')
 
 const IMG_PROTOCOL = 'octopus-img'
 
@@ -62,7 +63,17 @@ const registerImageProtocol = () => {
   })
 }
 
-let config = applyConfigDefaults(require('./config.json'))
+const loadOrInitConfig = () => {
+  if (!fs.existsSync(CONFIG_PATH)) {
+    fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true })
+    fs.copyFileSync(CONFIG_TEMPLATE_PATH, CONFIG_PATH)
+  }
+
+  const rawConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
+  return applyConfigDefaults(rawConfig)
+}
+
+let config
 
 let mainWindow
 
@@ -211,6 +222,7 @@ downloadEvents.on('progress', (payload) => {
 })
 
 app.whenReady().then(() => {
+  config = loadOrInitConfig()
   registerImageProtocol()
   createWindow()
   fetchInitialData(config)
