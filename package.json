@@ -6,13 +6,14 @@
   "scripts": {
     "start": "electron .",
     "build:mac": "electron-builder --mac --dir",
+    "build:win": "electron-builder --win --x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "saciar dev",
   "license": "ISC",
   "devDependencies": {
     "electron": "^41.7.1",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.7"
   },
   "build": {
     "appId": "com.octopus.speakerpreviewmanager",
@@ -23,6 +24,14 @@
       "extendInfo": {
         "NSAppleEventsUsageDescription": "Octopus necesita controlar Keynote mediante Eventos de Apple para abrir automáticamente el archivo .key de la charla seleccionada."
       }
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "references/assets/logo-mark-512.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
     },
     "afterSign": "scripts/afterSignAdHoc.js"
   }
