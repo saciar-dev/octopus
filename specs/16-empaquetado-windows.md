@@ -1,6 +1,6 @@
 # SPEC 16 — Empaquetado de la app Electron para Windows
 
-> **Estado:** Approved
+> **Estado:** Implementado
 > **Depende de:** SPEC 10 (empaquetado-firma-macos), SPEC 15 (config-json-userdata)
 > **Fecha:** 2026-08-06
 > **Objetivo:** Empaquetar Octopus como un instalador `.exe` (NSIS, x64, sin firma de código) mediante `electron-builder`, análogo al `npm run build:mac` de SPEC 10, para poder distribuir e instalar la app en las PCs Windows de los kioscos de congresos sin depender de `npm start`.
@@ -56,6 +56,18 @@ Este spec no introduce estructuras de datos nuevas ni afecta `config.json`, el m
 
 - `references/assets/logo-mark-512.png` — logo cuadrado 520×512 provisto por el usuario, fuente para el `.ico` generado por `electron-builder` (ya agregado al repo durante esta sesión de `/spec`).
 
+## Cómo generar el build de Windows
+
+Para generar el instalador `.exe` de Windows (análogo a `npm run build:mac` de SPEC 10):
+
+```
+npm run build:win
+```
+
+Esto genera `dist/Octopus Setup 1.0.0.exe` (instalador NSIS one-click, sin firma de código).
+
+**Requisito de entorno:** Node **>= 22.12.0**. Durante la implementación de este spec se detectó que `electron-builder@26.15.3` (la versión instalada por SPEC 10) falla con `ERR_REQUIRE_ESM` al ejecutar tanto `build:mac` como `build:win` en Node 20.17.0, por una dependencia (`@noble/hashes@^2.2.0`, ESM-only) que `app-builder-lib` carga con `require()`. Se resolvió actualizando `electron-builder` a `26.15.7` y Node a `22.12.0` (vía `nvm-windows`) en la PC usada para el build — quien prepare una PC nueva para generar builds debe partir de Node `>= 22.12.0`.
+
 ## Implementation plan
 
 1. Confirmar que `references/assets/logo-mark-512.png` está en el repo (agregado durante esta spec) y es válido como fuente de ícono (cuadrado, ≥256×256 — es 520×512). Verificación manual: abrir el archivo y confirmar dimensiones.
@@ -68,15 +80,15 @@ Este spec no introduce estructuras de datos nuevas ni afecta `config.json`, el m
 
 ## Acceptance criteria
 
-- [ ] Existe un script `npm run build:win` que genera un instalador `.exe` (NSIS, x64) a partir del código fuente actual.
-- [ ] El build no requiere ninguna configuración adicional de firma de código — corre sin certificado `.pfx`.
-- [ ] El instalador generado usa como ícono el derivado de `references/assets/logo-mark-512.png` (instalador, `.exe` y accesos directos).
-- [ ] El instalador es one-click: no muestra wizard de opciones ni pide elegir carpeta de instalación.
-- [ ] La instalación no requiere privilegios de administrador ni muestra prompt de UAC (`perMachine: false`).
-- [ ] Tras instalar, existen accesos directos en Escritorio y Menú Inicio que abren la app.
-- [ ] Corriendo la app instalada (no `npm start`), el flujo completo funciona: arranque, lectura/escritura de `config.json` en `userData` (SPEC 15), fetch de datos reales (SPEC 03), descarga de presentaciones e imágenes (SPEC 05/14), navegación Splash → Schedule → Session → Speaker.
-- [ ] `npm run build:mac` (SPEC 10) sigue funcionando sin cambios de comportamiento tras agregar el bloque `build.win`.
-- [ ] Queda documentado en este spec el comando para generar el build de Windows.
+- [x] Existe un script `npm run build:win` que genera un instalador `.exe` (NSIS, x64) a partir del código fuente actual.
+- [x] El build no requiere ninguna configuración adicional de firma de código — corre sin certificado `.pfx`.
+- [x] El instalador generado usa como ícono el derivado de `references/assets/logo-mark-512.png` (instalador, `.exe` y accesos directos).
+- [x] El instalador es one-click: no muestra wizard de opciones ni pide elegir carpeta de instalación.
+- [x] La instalación no requiere privilegios de administrador ni muestra prompt de UAC (`perMachine: false`).
+- [x] Tras instalar, existen accesos directos en Escritorio y Menú Inicio que abren la app.
+- [x] Corriendo la app instalada (no `npm start`), el flujo completo funciona: arranque, lectura/escritura de `config.json` en `userData` (SPEC 15), fetch de datos reales (SPEC 03), descarga de presentaciones e imágenes (SPEC 05/14), navegación Splash → Schedule → Session → Speaker.
+- [x] `npm run build:mac` (SPEC 10) sigue funcionando sin cambios de comportamiento tras agregar el bloque `build.win`.
+- [x] Queda documentado en este spec el comando para generar el build de Windows.
 
 ## Decisions
 
@@ -100,3 +112,4 @@ Este spec no introduce estructuras de datos nuevas ni afecta `config.json`, el m
 | El logo fuente (520×512, no perfectamente cuadrado) puede generar un `.ico` con márgenes o recorte leve al convertirse a las resoluciones estándar de Windows | Riesgo menor aceptado; se valida visualmente en el paso 5 del plan (accesos directos generados) y se puede ajustar el asset en una spec futura si el resultado no es aceptable. |
 | Instalar sin privilegios de administrador (`perMachine: false`) coloca la app en `%LOCALAPPDATA%` del usuario que instala — si la PC del kiosco usa una cuenta de usuario distinta a la que la ejecuta durante el evento, el acceso directo/instalación no sería visible para esa otra cuenta | Riesgo operativo a tener en cuenta al preparar las PCs del evento: instalar con la misma cuenta de Windows que va a operar el kiosco. No se resuelve en código en esta spec. |
 | `electron-builder` con targets `mac` y `win` configurados simultáneamente en el mismo `package.json` podría introducir algún conflicto de configuración no anticipado | Se valida explícitamente en el paso 2 del plan que `npm run build:mac` sigue funcionando sin cambios tras agregar el bloque `build.win`. |
+| `electron-builder@26.15.3` (versión instalada por SPEC 10) falla con `ERR_REQUIRE_ESM` en Node < 22.12 por una dependencia ESM-only (`@noble/hashes@^2.2.0`) cargada con `require()` en `app-builder-lib` — afecta tanto `build:mac` como `build:win`, descubierto durante la implementación de este spec | Se actualizó `electron-builder` a `26.15.7` en `package.json` (bump de versión, no reinstalación) y se documentó el requisito de Node `>= 22.12.0` en la sección "Cómo generar el build de Windows". |
