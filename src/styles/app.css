@@ -613,9 +613,9 @@ body {
 
 .speaker-body {
   flex: 1;
-  padding: 28px 32px;
+  padding: var(--sp-10) var(--sp-12);
   display: flex;
-  gap: 28px;
+  gap: var(--sp-8);
   overflow: hidden;
 }
 
