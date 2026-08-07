@@ -1,6 +1,6 @@
 # SPEC 18 — Rediseño visual de Speaker
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 01 (mvp-visual-pantallas), SPEC 08 (splash-redesign, precedente de proceso)
 > **Fecha:** 2026-08-07
 > **Objetivo:** Rediseñar visualmente `src/screens/speaker.js` para mejorar la jerarquía visual (nombre/bio vs. botón Go), dar más "aire" al layout, agrandar la foto/placeholder del disertante, rebalancear el bloque sponsor+QR y hacer más visible el botón Go, manteniendo el mismo layout de tres columnas (foto, texto principal, sidebar) y sin cambiar ningún comportamiento funcional existente.
@@ -44,17 +44,17 @@ Este spec no introduce ni cambia ninguna estructura de datos. Es puramente visua
 
 ## Acceptance criteria
 
-- [ ] `.speaker-body` tiene más padding/gap que la versión actual, sin que el contenido desborde ni se corte con datos reales.
-- [ ] `.speaker-photo` (foto real o placeholder de iniciales) es visiblemente más grande que el tamaño actual (96px), y el placeholder de iniciales sigue centrado y legible al nuevo tamaño.
-- [ ] `.speaker-name` domina visualmente sobre `.speaker-bio` y el resto del bloque principal (mayor jerarquía tipográfica que hoy).
-- [ ] `.speaker-bio` queda claramente separado del nombre/social (más espacio), sin cambiar el `max-width` de 640px.
-- [ ] El sidebar de sponsor + QR (`.speaker-side`) se ve balanceado en las tres combinaciones posibles: solo sponsor, solo QR, ambos.
-- [ ] El botón "Go" se distingue claramente de los íconos back/reset dentro de `.floating-actions`, en sus tres estados (normal, cargando/disabled, con error visible).
-- [ ] El botón "Go" mantiene su posición actual (cluster flotante bottom-right) y su comportamiento exacto: abre la presentación (`openPresentation`), respeta `MIN_LOADING_MS`, muestra `.speaker-go-error` en caso de fallo — sin ningún cambio de lógica.
-- [ ] El fade cruzado de 200ms entre pantallas (SPEC 17) sigue funcionando sin cambios al entrar/salir de Speaker.
-- [ ] Speaker sigue viéndose correctamente en tema oscuro con los tokens globales existentes (sin regresión, aunque no se ajustó específicamente).
-- [ ] Todos los cambios de color/tipografía/espaciado usan tokens ya existentes en `references/tokens/*.css` — no hay valores hardcodeados nuevos.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01–17 (navegación, fetch de datos, descarga de presentaciones/imágenes, config, transiciones).
+- [x] `.speaker-body` tiene más padding/gap que la versión actual, sin que el contenido desborde ni se corte con datos reales.
+- [x] `.speaker-photo` (foto real o placeholder de iniciales) es visiblemente más grande que el tamaño actual (96px), y el placeholder de iniciales sigue centrado y legible al nuevo tamaño.
+- [x] `.speaker-name` domina visualmente sobre `.speaker-bio` y el resto del bloque principal (mayor jerarquía tipográfica que hoy).
+- [x] `.speaker-bio` queda claramente separado del nombre/social (más espacio), sin cambiar el `max-width` de 640px.
+- [x] El sidebar de sponsor + QR (`.speaker-side`) se ve balanceado en las tres combinaciones posibles: solo sponsor, solo QR, ambos.
+- [x] El botón "Go" se distingue claramente de los íconos back/reset dentro de `.floating-actions`, en sus tres estados (normal, cargando/disabled, con error visible).
+- [x] El botón "Go" mantiene su posición actual (cluster flotante bottom-right) y su comportamiento exacto: abre la presentación (`openPresentation`), respeta `MIN_LOADING_MS`, muestra `.speaker-go-error` en caso de fallo — sin ningún cambio de lógica.
+- [x] El fade cruzado de 200ms entre pantallas (SPEC 17) sigue funcionando sin cambios al entrar/salir de Speaker.
+- [x] Speaker sigue viéndose correctamente en tema oscuro con los tokens globales existentes (sin regresión, aunque no se ajustó específicamente).
+- [x] Todos los cambios de color/tipografía/espaciado usan tokens ya existentes en `references/tokens/*.css` — no hay valores hardcodeados nuevos.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01–17 (navegación, fetch de datos, descarga de presentaciones/imágenes, config, transiciones).
 
 ## Decisions
 
