@@ -644,10 +644,10 @@ body {
 
 .speaker-name {
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-h3);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-h1);
   color: var(--color-brand-primary);
-  margin: 8px 0 6px;
+  margin: var(--sp-2) 0 var(--sp-2);
 }
 
 .speaker-social {
@@ -662,10 +662,10 @@ body {
 
 .speaker-bio {
   font-family: var(--font-body);
-  font-size: var(--fs-body);
+  font-size: var(--fs-body-lg);
   color: var(--color-link);
   line-height: var(--lh-normal);
-  margin-top: 16px;
+  margin-top: var(--sp-6);
   max-width: 640px;
 }
 
@@ -691,6 +691,7 @@ body {
   text-align: center;
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
+  font-size: var(--fs-body-lg);
   color: var(--color-accent);
   padding: 0 8px;
 }
@@ -707,7 +708,7 @@ body {
 
 .speaker-followme-label {
   font-family: var(--font-body);
-  font-size: var(--fs-body);
+  font-size: var(--fs-body-lg);
   color: var(--color-brand-primary);
   margin-bottom: 8px;
 }
