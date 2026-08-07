@@ -1,6 +1,6 @@
 # SPEC 17 — Transiciones y animaciones entre pantallas
 
-> **Estado:** Approved
+> **Estado:** Implementado
 > **Depende de:** SPEC 01 (mvp-visual-pantallas)
 > **Fecha:** 2026-08-07
 > **Objetivo:** Agregar un fade cruzado de 200ms entre pantallas (Splash/Schedule/Session/Speaker) en las transiciones de navegación (`show`, `goBack`, `reset` de `src/app.js`), reutilizando los tokens de motion ya definidos en el sistema de diseño, sin bloquear el foco por teclado ni la interactividad durante la animación.
@@ -50,15 +50,15 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Navegar de una pantalla a otra vía `show()` (ej. Schedule → Session) produce un fade cruzado visible de ~200ms, sin corte instantáneo ni pantalla vacía intermedia.
-- [ ] `goBack()` (tecla Esc o botón back) produce el mismo fade cruzado de 200ms al volver a la pantalla anterior.
-- [ ] `reset()` (SPEC 07) produce el mismo fade cruzado de 200ms al volver a Splash.
-- [ ] Tocar/disparar una navegación nueva mientras una transición está en curso corta la transición vieja de inmediato y arranca la nueva, sin dejar nodos de pantallas viejas visibles ni acumulados en el DOM.
-- [ ] El foco por teclado (flechas/Enter/Esc, `src/keyboard.js`) funciona en la pantalla nueva inmediatamente después de `show()`/`goBack()`/`reset()`, sin esperar a que termine la animación.
-- [ ] El overlay de progreso de descargas (`.screen-footer`, SPEC 06) se sigue mostrando correctamente durante una transición si hay una descarga en curso.
-- [ ] La duración y curva de la animación usan los tokens `--dur-normal` y `--ease-standard` de `references/tokens/effects.css`, no valores hardcodeados nuevos.
-- [ ] Las animaciones existentes del splash (pulso/beat) siguen funcionando sin cambios.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01–16 (navegación, fetch inicial, refresh, reset, descarga de presentaciones/imágenes, config).
+- [x] Navegar de una pantalla a otra vía `show()` (ej. Schedule → Session) produce un fade cruzado visible de ~200ms, sin corte instantáneo ni pantalla vacía intermedia.
+- [x] `goBack()` (tecla Esc o botón back) produce el mismo fade cruzado de 200ms al volver a la pantalla anterior.
+- [x] `reset()` (SPEC 07) produce el mismo fade cruzado de 200ms al volver a Splash.
+- [x] Tocar/disparar una navegación nueva mientras una transición está en curso corta la transición vieja de inmediato y arranca la nueva, sin dejar nodos de pantallas viejas visibles ni acumulados en el DOM.
+- [x] El foco por teclado (flechas/Enter/Esc, `src/keyboard.js`) funciona en la pantalla nueva inmediatamente después de `show()`/`goBack()`/`reset()`, sin esperar a que termine la animación.
+- [x] El overlay de progreso de descargas (`.screen-footer`, SPEC 06) se sigue mostrando correctamente durante una transición si hay una descarga en curso.
+- [x] La duración y curva de la animación usan los tokens `--dur-normal` y `--ease-standard` de `references/tokens/effects.css`, no valores hardcodeados nuevos.
+- [x] Las animaciones existentes del splash (pulso/beat) siguen funcionando sin cambios.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01–16 (navegación, fetch inicial, refresh, reset, descarga de presentaciones/imágenes, config).
 
 ## Decisions
 
