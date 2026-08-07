@@ -675,11 +675,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: var(--sp-6);
 }
 
 .speaker-sponsor-badge {
-  width: 140px;
+  width: 130px;
   height: 90px;
   border: 2px solid var(--color-accent);
   clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
@@ -714,8 +714,8 @@ body {
 }
 
 .speaker-followme-qr {
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   background: repeating-conic-gradient(var(--neutral-900) 0% 25%, #fff 0% 50%) 0 0/16px 16px;
   border: 4px solid #fff;
   box-shadow: var(--shadow-sm);
