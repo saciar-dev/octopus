@@ -1,6 +1,6 @@
 # SPEC 15 — config.json accesible/modificable en la app distribuida
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 03 (datos-reales-api), SPEC 04 (configuracion-app), SPEC 10 (empaquetado-firma-macos)
 > **Fecha:** 2026-08-06
 > **Objetivo:** Mover la lectura/escritura de `config.json` de la carpeta de la app (`__dirname`, dentro del bundle empaquetado y de solo lectura) a `app.getPath('userData')`, copiando la plantilla versionada del repo la primera vez que no exista ahí, para que el botón "Guardar" de SPEC 04 funcione igual en `npm start` y en la app distribuida (Windows y Mac).
@@ -56,14 +56,14 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] `main.js` ya no lee ni escribe `config.json` desde `__dirname` (carpeta de la app) en runtime — usa `app.getPath('userData')`.
-- [ ] Al arrancar por primera vez (sin `config.json` previo en `userData`), la app copia automáticamente la plantilla del repo a `userData/config.json` y arranca con esos valores.
-- [ ] En arranques posteriores, si `userData/config.json` ya existe, la app lo usa tal cual — no se sobreescribe con la plantilla del repo.
-- [ ] Desde la pantalla `config` (SPEC 04), "Guardar" escribe en `userData/config.json`, no en el `config.json` de la raíz del repo/bundle.
-- [ ] El `config.json` de la raíz del repo permanece sin cambios después de usar "Guardar" en la app (dev o empaquetada).
-- [ ] Corriendo la app empaquetada (`.app` generado por `npm run build:mac`, no `npm start`), "Guardar" en la pantalla `config` funciona sin errores de escritura (a diferencia del comportamiento actual, donde el bundle es de solo lectura).
-- [ ] El comportamiento de lectura/escritura de `config.json` es idéntico entre `npm start` y la app empaquetada (mismo code path, sin ramas por `app.isPackaged`).
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01–14 (navegación, fetch inicial, refresh, reset, descarga de presentaciones/imágenes, apertura de `.key`/PowerPoint) salvo los cambios explícitamente documentados en esta spec.
+- [x] `main.js` ya no lee ni escribe `config.json` desde `__dirname` (carpeta de la app) en runtime — usa `app.getPath('userData')`.
+- [x] Al arrancar por primera vez (sin `config.json` previo en `userData`), la app copia automáticamente la plantilla del repo a `userData/config.json` y arranca con esos valores.
+- [x] En arranques posteriores, si `userData/config.json` ya existe, la app lo usa tal cual — no se sobreescribe con la plantilla del repo.
+- [x] Desde la pantalla `config` (SPEC 04), "Guardar" escribe en `userData/config.json`, no en el `config.json` de la raíz del repo/bundle.
+- [x] El `config.json` de la raíz del repo permanece sin cambios después de usar "Guardar" en la app (dev o empaquetada).
+- [x] Corriendo la app empaquetada (`.app` generado por `npm run build:mac`, no `npm start`), "Guardar" en la pantalla `config` funciona sin errores de escritura (a diferencia del comportamiento actual, donde el bundle es de solo lectura).
+- [x] El comportamiento de lectura/escritura de `config.json` es idéntico entre `npm start` y la app empaquetada (mismo code path, sin ramas por `app.isPackaged`).
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01–14 (navegación, fetch inicial, refresh, reset, descarga de presentaciones/imágenes, apertura de `.key`/PowerPoint) salvo los cambios explícitamente documentados en esta spec.
 
 ## Decisions
 
