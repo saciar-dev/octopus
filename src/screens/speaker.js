@@ -60,7 +60,7 @@
     main.className = 'speaker-main'
 
     const sessionTitleLabel = document.createElement('div')
-    sessionTitleLabel.className = 'section-label'
+    sessionTitleLabel.className = 'section-label section-label--lg'
     sessionTitleLabel.innerHTML = `<span class="section-label-bar"></span><span>${speaker.sessionTitle}</span>`
 
     const name = document.createElement('div')
