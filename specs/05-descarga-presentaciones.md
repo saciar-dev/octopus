@@ -1,6 +1,6 @@
 # SPEC 05 — Descarga de presentaciones
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 03 (datos-reales-api), SPEC 04 (configuracion-app)
 > **Fecha:** 2026-07-30
 > **Objetivo:** Descargar automáticamente en background los archivos de presentación de cada charla desde `{ftpBaseUrl}/sync/ftpspace/{codigoEvento}/{nombreArchivo}`, guardarlos localmente en `userData/presentaciones/`, y hacer que el botón "Go" abra el archivo local (con la app por defecto del SO) descargándolo on-demand si todavía no está disponible.
