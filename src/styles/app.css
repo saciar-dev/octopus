@@ -397,6 +397,7 @@ body {
 .floating-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
   padding: 0 32px 16px;
 }
@@ -720,6 +721,13 @@ body {
   border: 4px solid #fff;
   box-shadow: var(--shadow-sm);
   object-fit: cover;
+}
+
+.floating-actions .btn.btn--primary.btn--lg {
+  height: 64px;
+  padding: 0 34px;
+  font-size: var(--fs-h2);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Config screen */
