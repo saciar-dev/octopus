@@ -45,12 +45,12 @@
   --color-bg-sunken: var(--blue-50);
   --color-border: var(--neutral-200);
   --color-border-strong: var(--blue-100);
-  --color-text-heading: var(--navy-700);
+  --color-text-heading: var(--color-brand-primary);
   --color-text-body: var(--neutral-900);
   --color-text-muted: var(--neutral-700);
   --color-text-on-brand: var(--neutral-white);
   --color-link: var(--blue-400);
-  --color-link-hover: var(--navy-700);
+  --color-link-hover: var(--color-brand-primary);
   --color-success: var(--green-500);
   --color-danger: var(--red-500);
   --color-accent-warm: #c8703e;
