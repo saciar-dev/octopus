@@ -167,7 +167,7 @@ body {
 }
 
 .splash-wave svg path {
-  fill: var(--navy-700);
+  fill: var(--color-brand-primary);
 }
 
 .splash-body {
