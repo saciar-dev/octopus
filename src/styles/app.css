@@ -843,16 +843,18 @@ body {
 }
 
 .config-accent-swatch {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-circle);
   border: 3px solid transparent;
   cursor: pointer;
   padding: 0;
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
 }
 
 .config-accent-swatch--selected {
-  border-color: var(--color-text-heading);
+  border-color: var(--color-bg-surface);
+  box-shadow: 0 0 0 3px var(--color-text-heading);
 }
 
 .speaker-go-error {
