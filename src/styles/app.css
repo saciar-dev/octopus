@@ -754,14 +754,20 @@ body {
   overflow-y: auto;
 }
 
+.config-body:has(.config-gate) {
+  justify-content: center;
+  align-items: center;
+}
+
 .config-gate {
+  width: 100%;
   max-width: 360px;
 }
 
 .config-gate-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-5);
 }
 
 .config-field-label {

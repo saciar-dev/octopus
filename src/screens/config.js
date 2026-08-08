@@ -1,7 +1,7 @@
 (function () {
   function renderPasswordGate({ onSuccess }) {
     const el = document.createElement('div')
-    el.className = 'config-gate'
+    el.className = 'config-gate panel'
     el.innerHTML = `
       <div class="config-gate-body">
         <label class="config-field-label" for="config-password">Password</label>
