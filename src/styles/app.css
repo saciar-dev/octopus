@@ -610,6 +610,19 @@ body {
   font-size: var(--fs-h3);
 }
 
+.btn--outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+}
+
+.panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-6);
+}
+
 /* Speaker screen */
 
 .speaker-body {
