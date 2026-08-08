@@ -781,11 +781,12 @@ body {
   font-size: var(--fs-body-sm);
   font-weight: var(--fw-medium);
   color: var(--color-text-muted);
+  margin-bottom: var(--sp-1);
 }
 
 .config-input {
-  height: 48px;
-  padding: 0 16px;
+  height: var(--sp-12);
+  padding: 0 var(--sp-4);
   border: var(--border-w) solid var(--color-border);
   border-radius: 0;
   background: var(--color-bg-surface);
@@ -823,11 +824,12 @@ body {
 .config-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 
 .config-theme-tabs {
   align-self: flex-start;
+  margin-top: var(--sp-1);
 }
 
 .config-form-error {
