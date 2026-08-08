@@ -1,6 +1,6 @@
 # SPEC 20 — Rediseño visual de Configuración
 
-> **Estado:** aprobado
+> **Estado:** implementado
 > **Depende de:** SPEC 04 (configuracion-app), SPEC 18 (rediseno-speaker, precedente de proceso), SPEC 19 (retinte-colores-acento)
 > **Fecha:** 2026-08-08
 > **Objetivo:** Rediseñar visualmente la pantalla `config.js` (gate de contraseña, formulario de conexión y selectores de tema/acento) agrupando los campos en paneles del sistema de diseño y diferenciando jerárquicamente los botones "Buscar salas" (secundario) y "Guardar" (primario), sin cambiar ningún comportamiento funcional existente.
@@ -48,17 +48,17 @@ Este spec no introduce ni cambia ninguna estructura de datos. Es puramente visua
 
 ## Acceptance criteria
 
-- [ ] El gate de contraseña se muestra centrado en la pantalla (no pegado arriba-izquierda), envuelto en un panel con fondo/borde propios (`.panel`).
-- [ ] El formulario de configuración muestra dos paneles visualmente diferenciados: "Conexión" (URL/evento/botón buscar salas/dropdown de sala) y "Apariencia" (tema/acento), cada uno con encabezado de sección visible.
-- [ ] El botón "Buscar salas" usa un estilo visualmente secundario (`.btn--outline`), distinto del botón "Guardar" (`btn--primary btn--lg`), de forma que "Guardar" se percibe como la acción principal.
-- [ ] Los swatches de color de acento son más grandes que el tamaño actual (36px) y el swatch seleccionado se distingue claramente de los no seleccionados.
-- [ ] Los inputs de texto, el dropdown de sala y las tabs de tema tienen paddings/espaciados consistentes con el resto del restyle (SPEC 18), sin desbordar los paneles que los contienen.
-- [ ] Los mensajes de error del gate y del formulario (`.config-gate-error`, `.config-form-error`) se destacan visualmente más que hoy, sin romper el layout del panel que los contiene.
-- [ ] `verifySettingsPassword`, `fetchSalas` y `saveSettings` siguen funcionando exactamente igual que antes: contraseña incorrecta muestra error y permite reintentar; "Buscar salas" puebla el dropdown o muestra error sin perder lo tipeado; "Guardar" persiste `config.json`, dispara refetch y navega a Splash.
-- [ ] La validación de campos vacíos/sala no seleccionada al Guardar sigue mostrando el mismo error sin escribir `config.json`.
-- [ ] La pantalla Config se ve correctamente en los 5 acentos (azul, verde, naranja, rojo, violeta) y en ambos temas (claro/oscuro), sin problemas de contraste.
-- [ ] Todos los cambios de color/tipografía/espaciado usan tokens ya existentes en `src/styles/tokens.css` — no hay valores hardcodeados nuevos.
-- [ ] No se rompe ninguna funcionalidad existente de SPEC 01–19 (navegación, gate de contraseña, fetch de datos, guardado de settings, retinte de acentos, tema oscuro).
+- [x] El gate de contraseña se muestra centrado en la pantalla (no pegado arriba-izquierda), envuelto en un panel con fondo/borde propios (`.panel`).
+- [x] El formulario de configuración muestra dos paneles visualmente diferenciados: "Conexión" (URL/evento/botón buscar salas/dropdown de sala) y "Apariencia" (tema/acento), cada uno con encabezado de sección visible.
+- [x] El botón "Buscar salas" usa un estilo visualmente secundario (`.btn--outline`), distinto del botón "Guardar" (`btn--primary btn--lg`), de forma que "Guardar" se percibe como la acción principal.
+- [x] Los swatches de color de acento son más grandes que el tamaño actual (36px) y el swatch seleccionado se distingue claramente de los no seleccionados.
+- [x] Los inputs de texto, el dropdown de sala y las tabs de tema tienen paddings/espaciados consistentes con el resto del restyle (SPEC 18), sin desbordar los paneles que los contienen.
+- [x] Los mensajes de error del gate y del formulario (`.config-gate-error`, `.config-form-error`) se destacan visualmente más que hoy, sin romper el layout del panel que los contiene.
+- [x] `verifySettingsPassword`, `fetchSalas` y `saveSettings` siguen funcionando exactamente igual que antes: contraseña incorrecta muestra error y permite reintentar; "Buscar salas" puebla el dropdown o muestra error sin perder lo tipeado; "Guardar" persiste `config.json`, dispara refetch y navega a Splash.
+- [x] La validación de campos vacíos/sala no seleccionada al Guardar sigue mostrando el mismo error sin escribir `config.json`.
+- [x] La pantalla Config se ve correctamente en los 5 acentos (azul, verde, naranja, rojo, violeta) y en ambos temas (claro/oscuro), sin problemas de contraste.
+- [x] Todos los cambios de color/tipografía/espaciado usan tokens ya existentes en `src/styles/tokens.css` — no hay valores hardcodeados nuevos.
+- [x] No se rompe ninguna funcionalidad existente de SPEC 01–19 (navegación, gate de contraseña, fetch de datos, guardado de settings, retinte de acentos, tema oscuro).
 
 ## Decisions
 
