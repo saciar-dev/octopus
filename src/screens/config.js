@@ -1,7 +1,7 @@
 (function () {
   function renderPasswordGate({ onSuccess }) {
     const el = document.createElement('div')
-    el.className = 'config-gate'
+    el.className = 'config-gate panel'
     el.innerHTML = `
       <div class="config-gate-body">
         <label class="config-field-label" for="config-password">Password</label>
@@ -50,39 +50,45 @@
     const el = document.createElement('div')
     el.className = 'config-form'
     el.innerHTML = `
-      <div class="config-field">
-        <label class="config-field-label" for="config-apiBaseUrl">API base URL</label>
-        <input class="config-input" type="text" id="config-apiBaseUrl" />
+      <div class="panel config-panel">
+        <div class="section-label"><span class="section-label-bar"></span><span>Connection</span></div>
+        <div class="config-field">
+          <label class="config-field-label" for="config-apiBaseUrl">API base URL</label>
+          <input class="config-input" type="text" id="config-apiBaseUrl" />
+        </div>
+        <div class="config-field">
+          <label class="config-field-label" for="config-codigoEvento">Event code</label>
+          <input class="config-input" type="text" id="config-codigoEvento" />
+        </div>
+        <div class="config-field">
+          <button class="btn btn--outline btn--md config-fetch-salas" type="button">Search rooms</button>
+        </div>
+        <div class="config-field">
+          <label class="config-field-label" for="config-idSala">Room</label>
+          <select class="config-input" id="config-idSala"></select>
+        </div>
       </div>
-      <div class="config-field">
-        <label class="config-field-label" for="config-codigoEvento">Event code</label>
-        <input class="config-input" type="text" id="config-codigoEvento" />
-      </div>
-      <div class="config-field">
-        <button class="btn btn--primary btn--lg config-fetch-salas" type="button">Search rooms</button>
-      </div>
-      <div class="config-field">
-        <label class="config-field-label" for="config-idSala">Room</label>
-        <select class="config-input" id="config-idSala"></select>
+      <div class="panel config-panel">
+        <div class="section-label"><span class="section-label-bar"></span><span>Appearance</span></div>
+        <div class="config-field">
+          <div class="config-field-label">Theme</div>
+          <div class="tabs config-theme-tabs">
+            <button class="tab" type="button" data-theme-value="light">Light</button>
+            <button class="tab" type="button" data-theme-value="dark">Dark</button>
+          </div>
+        </div>
+        <div class="config-field">
+          <div class="config-field-label">Accent color</div>
+          <div class="config-accent-swatches">
+            <button class="config-accent-swatch" type="button" data-accent-value="blue" aria-label="Blue"></button>
+            <button class="config-accent-swatch" type="button" data-accent-value="green" aria-label="Green"></button>
+            <button class="config-accent-swatch" type="button" data-accent-value="orange" aria-label="Orange"></button>
+            <button class="config-accent-swatch" type="button" data-accent-value="red" aria-label="Red"></button>
+            <button class="config-accent-swatch" type="button" data-accent-value="violet" aria-label="Violet"></button>
+          </div>
+        </div>
       </div>
       <div class="config-form-error" hidden></div>
-      <div class="config-field">
-        <div class="config-field-label">Theme</div>
-        <div class="tabs config-theme-tabs">
-          <button class="tab" type="button" data-theme-value="light">Light</button>
-          <button class="tab" type="button" data-theme-value="dark">Dark</button>
-        </div>
-      </div>
-      <div class="config-field">
-        <div class="config-field-label">Accent color</div>
-        <div class="config-accent-swatches">
-          <button class="config-accent-swatch" type="button" data-accent-value="blue" aria-label="Blue"></button>
-          <button class="config-accent-swatch" type="button" data-accent-value="green" aria-label="Green"></button>
-          <button class="config-accent-swatch" type="button" data-accent-value="orange" aria-label="Orange"></button>
-          <button class="config-accent-swatch" type="button" data-accent-value="red" aria-label="Red"></button>
-          <button class="config-accent-swatch" type="button" data-accent-value="violet" aria-label="Violet"></button>
-        </div>
-      </div>
       <div class="config-field">
         <button class="btn btn--primary btn--lg config-save" type="button">Save</button>
       </div>

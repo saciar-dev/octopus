@@ -610,6 +610,25 @@ body {
   font-size: var(--fs-h3);
 }
 
+.btn--md {
+  height: 40px;
+  padding: 0 18px;
+  font-size: var(--fs-body);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+}
+
+.panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-6);
+}
+
 /* Speaker screen */
 
 .speaker-body {
@@ -741,14 +760,20 @@ body {
   overflow-y: auto;
 }
 
+.config-body:has(.config-gate) {
+  justify-content: center;
+  align-items: center;
+}
+
 .config-gate {
+  width: 100%;
   max-width: 360px;
 }
 
 .config-gate-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--sp-5);
 }
 
 .config-field-label {
@@ -756,11 +781,12 @@ body {
   font-size: var(--fs-body-sm);
   font-weight: var(--fw-medium);
   color: var(--color-text-muted);
+  margin-bottom: var(--sp-1);
 }
 
 .config-input {
-  height: 48px;
-  padding: 0 16px;
+  height: var(--sp-12);
+  padding: 0 var(--sp-4);
   border: var(--border-w) solid var(--color-border);
   border-radius: 0;
   background: var(--color-bg-surface);
@@ -779,7 +805,10 @@ body {
   color: var(--color-danger);
   font-family: var(--font-body);
   font-size: var(--fs-body-sm);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-bold);
+  background: var(--color-bg-sunken);
+  border-left: 3px solid var(--color-danger);
+  padding: var(--sp-2) var(--sp-3);
 }
 
 .config-form {
@@ -789,21 +818,31 @@ body {
   max-width: 420px;
 }
 
+.config-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
 .config-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sp-2);
 }
 
 .config-theme-tabs {
   align-self: flex-start;
+  margin-top: var(--sp-1);
 }
 
 .config-form-error {
   color: var(--color-danger);
   font-family: var(--font-body);
   font-size: var(--fs-body-sm);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-bold);
+  background: var(--color-bg-sunken);
+  border-left: 3px solid var(--color-danger);
+  padding: var(--sp-2) var(--sp-3);
 }
 
 .config-accent-swatches {
@@ -812,16 +851,18 @@ body {
 }
 
 .config-accent-swatch {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-circle);
   border: 3px solid transparent;
   cursor: pointer;
   padding: 0;
+  transition: box-shadow var(--dur-fast) var(--ease-standard);
 }
 
 .config-accent-swatch--selected {
-  border-color: var(--color-text-heading);
+  border-color: var(--color-bg-surface);
+  box-shadow: 0 0 0 3px var(--color-text-heading);
 }
 
 .speaker-go-error {
