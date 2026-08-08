@@ -610,6 +610,12 @@ body {
   font-size: var(--fs-h3);
 }
 
+.btn--md {
+  height: 40px;
+  padding: 0 18px;
+  font-size: var(--fs-body);
+}
+
 .btn--outline {
   background: transparent;
   color: var(--color-accent);

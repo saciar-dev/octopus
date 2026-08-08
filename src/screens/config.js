@@ -61,7 +61,7 @@
           <input class="config-input" type="text" id="config-codigoEvento" />
         </div>
         <div class="config-field">
-          <button class="btn btn--outline config-fetch-salas" type="button">Search rooms</button>
+          <button class="btn btn--outline btn--md config-fetch-salas" type="button">Search rooms</button>
         </div>
         <div class="config-field">
           <label class="config-field-label" for="config-idSala">Room</label>
