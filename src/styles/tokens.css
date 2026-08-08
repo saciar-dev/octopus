@@ -45,12 +45,12 @@
   --color-bg-sunken: var(--blue-50);
   --color-border: var(--neutral-200);
   --color-border-strong: var(--blue-100);
-  --color-text-heading: var(--navy-700);
+  --color-text-heading: var(--color-brand-primary);
   --color-text-body: var(--neutral-900);
   --color-text-muted: var(--neutral-700);
   --color-text-on-brand: var(--neutral-white);
   --color-link: var(--blue-400);
-  --color-link-hover: var(--navy-700);
+  --color-link-hover: var(--color-brand-primary);
   --color-success: var(--green-500);
   --color-danger: var(--red-500);
   --color-accent-warm: #c8703e;
@@ -119,7 +119,7 @@
   --color-text-on-brand: var(--neutral-white);
 }
 
-:root[data-accent='green'] { --color-accent: var(--green-500); --color-accent-soft: #6bc796; }
-:root[data-accent='orange'] { --color-accent: var(--color-accent-warm); --color-accent-soft: #dda57e; }
-:root[data-accent='red'] { --color-accent: var(--red-500); --color-accent-soft: #ea8a78; }
-:root[data-accent='violet'] { --color-accent: #7c4fd1; --color-accent-soft: #b39aec; }
+:root[data-accent='green'] { --color-accent: var(--green-500); --color-accent-soft: #6bc796; --color-brand-primary: #17532f; --shadow-btn: 0 2px 6px rgba(46, 158, 91, 0.35); }
+:root[data-accent='orange'] { --color-accent: var(--color-accent-warm); --color-accent-soft: #dda57e; --color-brand-primary: #6b3512; --shadow-btn: 0 2px 6px rgba(200, 112, 62, 0.35); }
+:root[data-accent='red'] { --color-accent: var(--red-500); --color-accent-soft: #ea8a78; --color-brand-primary: #8a2416; --shadow-btn: 0 2px 6px rgba(224, 73, 47, 0.35); }
+:root[data-accent='violet'] { --color-accent: #7c4fd1; --color-accent-soft: #b39aec; --color-brand-primary: #3d2570; --shadow-btn: 0 2px 6px rgba(124, 79, 209, 0.35); }
